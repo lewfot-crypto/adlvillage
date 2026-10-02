@@ -215,8 +215,9 @@ function sfx(name,a){
       def:기본값, min/max/step(range), options:[{v:값,l:글자}](select), apply:function(값){...}, run:function(){...}(button)}
    - 새 탭은 tab 이름만 새로 쓰면 생겨요.
    ===================================================================== */
-var VERSION='0.49 데모';
+var VERSION='0.50 데모';
 var CHANGES=[
+  '0.50  글자를 읽기 편하게: 대화창·일지·설정 글자를 조금 키우고 살짝 굵게. 설정 → 화면에서 글자 크기를 작게(예전 크기) / 보통(조금 큼, 기본) / 크게로 고를 수 있음(대화창 초상화 크기는 그대로). 대화창·설정·일지의 양피지를 새로 그림(옅은 얼룩 + 종이 섬유 + 잔점, 가장자리가 계단식으로 살짝 그을린 오래된 종이). 위쪽 알림 글자가 길면 줄바꿈, 설정 항목이 큰 글자에서 좁게 꺾이던 것을 이름 아래로 버튼이 내려가게 수정',
   '0.49  이야기 6편 "스승의 첫 초" 추가(5편 다음 날부터, 광장 웰라 → 마법스승 → 알레센도가 맡아 둔 실패의 공책 → 저녁 학교 서가에서 그림자 마법 → 스승 앞에서 첫 초에 불꽃, 스승이 처음 웃음). 작은 부탁 3가지(오르가의 데운 우유, 알레센도의 가을 잉크, 시나의 고맙다냥). 여관 카운터 옆 벽에 도트 엽서 6장. 설정 테스트 탭에 이야기 1~6편 시작 지점으로 바로 가기. 다듬기: 시나(마법냥이)의 연보라 스티커 테두리를 없애고 다른 인물처럼 짙은 외곽선으로, 일지 작은 글씨의 줄·글자 간격을 넓히고 단어 중간에서 줄이 끊기지 않게, 등불·촛불 심지 쪽 빛이 더 또렷하게 일렁임, 상점 수정구슬에 빛, 예전 네온 간판 자리에 남아 있던 보라 깜빡임 삭제, 선술집 가운데 들보 아래를 지날 때 들보·매달린 약초가 앞을 가림, 광장 구름·무지개·단풍잎 반짝이를 배경과 같은 도트 크기로 다시 그림(무지개는 분수 위에만), 인물에게 말 걸면 겹치지 않고 옆에 나란히 섬, 광장의 웰라·시나가 너무 붙어 있거나 분수 앞을 막던 자리 조정',
   '0.48  이야기 5편 "첫 등불의 약속" 추가(구름 소동 다음 날부터, 밤의 상점 올빼미가 맡아 둔 꾸러미 → 브란의 구석 자리 → 오르가의 가장 오래된 엽서 → 마법스승의 입학 명부를 빛 모으기로 읽기 → 꼬리표 뒷면 → 선술집 구석 자리에서 불꽃으로 낡은 등불 켜기). 마을 이름 "아델라인"의 유래가 밝혀짐. 선술집 구석 탁자에 등불이 계속 켜져 있음, 브란의 나무 숟가락',
   '0.47  마을 사람들 말투가 날짜에 맞게 조금씩 가까워짐(1~3일차는 처음 본 손님처럼, 4~7일차는 얼굴 익힌 사이, 8일차부터 지금처럼 다정하게). 속 깊은 이야기(브란의 수프 비밀·나무 숟가락, 시나의 지붕 위 등불 등)는 친해진 뒤에 들려줌. 첫 화면 불러오기 바를 도트 그라데이션(왼쪽 짙은 주황→오른쪽 금빛, 바둑판 무늬로 단계 연결)으로, 위쪽 "AUTUMN TERM" 글자 삭제, 시작 화면 제목을 예전 로고로 되돌림. 설정 정보 탭에서 버전별 바뀐 내용을 한 장씩 넘겨 보기. 알레센도 초상화 목 부분(옷깃이 목에 붙어 보이던 것) 정리, 대화 초상화 틀 아래쪽이 가려지던 문제 수정. 광장 상점 앞 물약·나무 상자를 밟고 지나가지 않게 함. 광장 가로등 안에 도트 불꽃이 일렁임',
@@ -267,13 +268,13 @@ var CHANGES=[
   '0.3  여관 1층·선술집·교실 장면, 오르가·브란 대사',
   '0.2  다락방, 아멜리아 걷기 그림'
 ];
-var SET={},SKEY='amelia.settings.v1',TEXTMS={slow:44,normal:26,fast:11},UIZOOM={small:.9,normal:1,large:1.15},CHARPS={small:.54,normal:.66,large:.8};
+var SET={},SKEY='amelia.settings.v1',TEXTMS={slow:44,normal:26,fast:11},UIZOOM={small:1,normal:1.12,large:1.26},CHARPS={small:.54,normal:.66,large:.8};
 var SETTINGS=[
   {id:'mute',tab:'소리',type:'toggle',label:'소리 전체 끄기',def:false,apply:function(){audApplyVol()}},
   {id:'bgmVol',tab:'소리',type:'range',label:'배경음 크기',min:0,max:100,step:5,def:70,apply:function(){audApplyVol()}},
   {id:'sfxVol',tab:'소리',type:'range',label:'효과음 크기',min:0,max:100,step:5,def:80,apply:function(){audApplyVol()},preview:function(){sfx('confirm')}},
   {id:'textSpeed',tab:'화면',type:'select',label:'글자 나오는 속도',def:'normal',options:[{v:'slow',l:'느리게'},{v:'normal',l:'보통'},{v:'fast',l:'빠르게'}]},
-  {id:'textSize',tab:'화면',type:'select',label:'글자 크기',def:'normal',options:[{v:'small',l:'작게'},{v:'normal',l:'보통'},{v:'large',l:'크게'}],apply:function(){resize()}},
+  {id:'textSize',tab:'화면',type:'select',label:'글자 크기',hint:'작게는 예전 글자 크기예요',def:'normal',options:[{v:'small',l:'작게'},{v:'normal',l:'보통'},{v:'large',l:'크게'}],apply:function(){resize()}},
   {id:'charSize',tab:'화면',type:'select',label:'아멜리아 크기',hint:'그림 크기만 바뀌어요',def:'normal',options:[{v:'small',l:'작게'},{v:'normal',l:'보통'},{v:'large',l:'크게'}],apply:function(v){PS=CHARPS[v]||.66}},
   {id:'toasts',tab:'화면',type:'toggle',label:'장소·목표 알림 보이기',def:true},
   {id:'destMark',tab:'조작',type:'toggle',label:'걸어갈 곳 표시',def:false},
@@ -3162,6 +3163,7 @@ function resize(){
   var w=Math.round(W*s),h=Math.round(H*s);
   cv.style.width=w+'px';cv.style.height=h+'px';
   stage.style.setProperty('--px',Math.max(2,Math.round(w/186))+'px');
+  var fs0=Math.max(13,Math.round(w/30));stage.style.setProperty('--fs0',fs0+'px');/* 글자 설정과 상관없는 기준 크기(초상화 등) */
   stage.style.fontSize=Math.max(13,Math.round(w/30*(UIZOOM[SET.textSize]||1)))+'px';
 }
 window.addEventListener('resize',resize);resize();
