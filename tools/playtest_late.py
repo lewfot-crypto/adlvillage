@@ -1,4 +1,4 @@
-"""5일차 이후 점검: 마법서 1~5장 + 엔딩, 8일차 부탁(약초·단풍잎) + 이야기 1편(사라진 가을 불빛).
+"""5일차 이후 점검: 마법서 1~5장 + 엔딩, 8일차 부탁(약초·단풍잎) + 이야기 1편(사라진 가을 불빛) + 2편(시나의 잃어버린 방울).
 사용: python3 tools/playtest_late.py [스크린샷폴더]   (playtest_story 와 같은 방식으로 5일차까지 먼저 진행)"""
 import asyncio,os,sys,json
 from playwright.async_api import async_playwright
@@ -52,7 +52,7 @@ async def main():
         async def sleep():
             await go('attic'); await phase(3); await ia('bed')
         async def info():
-            return json.loads(await ev("(()=>{const s=__g.S(),B=s.book||{};return JSON.stringify({day:s.day,cal:s.cal.m+'/'+s.cal.d,main:s.q.main&&s.q.main.st,herb:s.q.herb&&s.q.herb.st,leaves:s.q.leaves&&s.q.leaves.st,lights:s.q.lights&&s.q.lights.st,book:Object.keys(B.pg||{}),bkey:B.key,end:B.ended,gold:s.gold,inv:s.inv,magic:s.magic})})()"))
+            return json.loads(await ev("(()=>{const s=__g.S(),B=s.book||{};return JSON.stringify({day:s.day,cal:s.cal.m+'/'+s.cal.d,main:s.q.main&&s.q.main.st,herb:s.q.herb&&s.q.herb.st,leaves:s.q.leaves&&s.q.leaves.st,lights:s.q.lights&&s.q.lights.st,bell:s.q.bell&&s.q.bell.st,book:Object.keys(B.pg||{}),bkey:B.key,end:B.ended,gold:s.gold,inv:s.inv,magic:s.magic})})()"))
         # ---- 1~5일차 빠르게 (playtest_story 와 같은 경로)
         async def walkout():
             await ev("__g.set('inn1',500,1300,'down')"); await pg.keyboard.down('ArrowDown'); await pg.wait_for_timeout(2500)
@@ -81,7 +81,7 @@ async def main():
         print('## 5일차 도착',await info(),flush=True)
         # ---- 5일차부터: 마법서 + 8일차 부탁
         for k in range(14):
-            i=await info(); print('#',i['day'],'일차',i['cal'],{x:i.get(x) for x in('main','herb','leaves','lights','book','bkey','gold')},flush=True)
+            i=await info(); print('#',i['day'],'일차',i['cal'],{x:i.get(x) for x in('main','herb','leaves','lights','bell','book','bkey','gold')},flush=True)
             B=i['book']
             if '1' not in B:
                 await at('inn1',2); await ia('fire',shoot='book1')
@@ -125,8 +125,21 @@ async def main():
                     await at('shop',1); await ev("(()=>{const s=__g.S();s.inv.herb=2})()"); await ev("__g.S().q.herb={st:'return'}")
                 i=await info()
                 if i.get('herb')=='return': await at('tavern',1); await ia('counter')
+                # 이야기 2편: 시나의 잃어버린 방울 (사라진 가을 불빛 다음 날부터)
+                i=await info()
+                if i.get('lights')=='done' and not i.get('bell'): await at('plaza',1); await ia('sina',shoot='bell_start')
+                i=await info()
+                if i.get('bell')=='clues':
+                    await at('inn1',1); await ia('counter',shoot='bell_orga')
+                    await at('tavern',1); await ia('counter')        # 메뉴 첫 줄 = 방울 이야기
+                i=await info()
+                if i.get('bell')=='wind': await at('plaza',1); await ia('fountain',shoot='bell_wind')
+                i=await info()
+                if i.get('bell')=='wella': await at('plaza',1); await ia('wella',shoot='bell_wella')
+                i=await info()
+                if i.get('bell')=='return': await at('plaza',1); await ia('sina',shoot='bell_return')
             i=await info()
-            if i.get('end'): print('## 엔딩 확인'); break
+            if i.get('end') and i.get('bell')=='done': print('## 엔딩·이야기 2편 확인'); break
             await sleep(); await pg.wait_for_timeout(800); await settle('wake',shoot='wake%d'%(i['day']+1))
         print('## 끝',await info()); print('ERRORS',errs); await b.close()
 asyncio.run(main())

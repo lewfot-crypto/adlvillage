@@ -1,7 +1,7 @@
 # 아델라인 빌리지 (Adeline Village) — 프로젝트 지침
 
 포근한 도트풍 단일 HTML 캔버스 게임. 마법학교가 있는 작은 마을에서 신입생 **아멜리아**가 보내는 가을 학기 이야기.
-현재 버전: **v0.42 데모** (아래 "현재 상태" 참고).
+현재 버전: **v0.43 데모** (아래 "현재 상태" 참고).
 
 ## 사용자와 일하는 규칙 (매우 중요)
 - 사용자(아멜리아)는 **한국어**로 대화한다. 답변도 **한국어, 짧고 쉽게**: "무엇이 바뀌었는지 + 사용자가 해야 할 일"만.
@@ -31,12 +31,15 @@ manifest.json, sw.js, pwa/   홈 화면 앱 이름·아이콘(임시: 아멜리�
 ## 빌드·테스트
 ```
 pip install pillow numpy opencv-python fonttools brotli playwright && playwright install chromium
+# 클라우드 세션: 브라우저가 미리 깔려 있으니 playwright install 대신
+#   pip install pillow numpy opencv-python-headless fonttools brotli playwright==1.56.0
+#   (빌드하면 assets/*_bg.png 가 압축만 다르게 다시 저장될 수 있음 → 그림은 같으니 git checkout 으로 되돌림)
 python3 build.py          # -> game.html (배포용)
 python3 build.py dbg      # -> game_dbg.html (테스트용, __g 훅)
 python3 tools/playtest_boot.py     # 오류 없이 부팅되는지
 python3 tools/playtest_objects.py inn1,attic,tavern,school,shop,plaza   # 모든 사물 눌러보기
 python3 tools/playtest_story.py 8  # 1일차~5일차 수업 흐름 자동 진행
-python3 tools/playtest_late.py [스크린샷폴더]  # 5~10일차: 마법서 5장·엔딩·부탁 3개
+python3 tools/playtest_late.py [스크린샷폴더]  # 5~10일차: 마법서 5장·엔딩·부탁 3개·이야기 2편
 ```
 - 테스트 봇은 프로젝트 루트에서 실행 (현재 폴더의 game.html / game_dbg.html 사용).
 - 봇 주의: 연출(cut) 중에는 화면을 누르지 말 것. 대화창은 `mouse.click(280,880)`로 넘기고 선택지는 `#dlg .ch > *` 요소를 클릭. 미니게임은 `__g.mini()`로 얻은 M 에 `n=need, ok=true, fin=0.01` 로 성공 처리.
@@ -53,7 +56,7 @@ python3 tools/playtest_late.py [스크린샷폴더]  # 5~10일차: 마법서 5�
 - 시간대 S.phase 0아침/1낮/2저녁/3밤. 설정의 timeMode 가 story/real.
 - 마을 이야기(LORE/tellLore): 하루 한 가지씩, 일지 "이야기" 탭.
 - 마법: SPELLS(flame, breeze, ripple, shadow, whisper, glow), 미니게임, 마법서 5장(BOOK).
-- 퀘스트: QUESTS (main 순서 목록 + 부탁 퀘스트 herb(브란), leaves(웰라), lights(오르가)).
+- 퀘스트: QUESTS (main 순서 목록 + 부탁 퀘스트 herb(브란), leaves(웰라), lights(오르가, 이야기 1편), bell(시나, 이야기 2편)).
 - 디버그 훅(game_dbg.html): `__g.set(scene,x,y,face)`, `go(scene,spawn)`, `ia(id)`, `tapObj`, `cut(id)`, `S()`, `st()`, `wp()`, `pos()`, `ap()`(NPC 재배치), `mini()`, `devTo(m,d)`, `devSkip(n)` 등.
 
 ## 캐릭터·세계관 (설정집 요약)
@@ -61,16 +64,17 @@ python3 tools/playtest_late.py [스크린샷폴더]  # 5~10일차: 마법서 5�
 - 오르가: 여관 주인(할머니, 다정). 브란: 선술집 주인(말수 적음, …로 시작). 웰라: 마법 견습생(해요체, "하하!"). 시나: 검은 고양이("…" + "~다냥"), 마법냥이 모드는 보라색. 알레센도: 마법 상점 서기관(정중, 이름으로 부름). 올빼미: 밤의 상점지기("호오…", 하게체). 마법스승: 엄격하지만 정 많음(담백한 해라체, 처음엔 아멜리아를 모름).
 - 분위기: 위험·공포 없는 포근한 일상 판타지.
 
-## 현재 상태 (v0.42)
+## 현재 상태 (v0.43)
 - 완료: 1일차~8일차 흐름(카운터→열쇠→다락방→짐→잠→웰라→학교 수업→촛불→바람결→빛모으기→마법서 발견), 마을 이야기 27편, 등불제, 마법서 5장+엔딩, 이야기 1편 「사라진 가을 불빛」(오르가 부탁→브란·마법스승 단서→상점 첫 등불→푸른 꽃 빛 모으기→저녁 광장 시나와 점등).
 - 5~10일차 점검 완료(v0.41, `tools/playtest_late.py`): 마법서 1~5장·엔딩, 약초·단풍잎·사라진 가을 불빛 모두 오류 없이 진행. 분수 서는 자리 수정, 아침 문구 수정. 상점 404 네온 간판 → 나무 간판(`tools/patch_shop_sign.py`, 원본 `assets/shop_bg_orig.jpg`). 카페 이름 '404 DRINK BAR' 설정은 유지.
 - v0.42: 알레센도 스프라이트를 사용자의 예전 게임 도트(`source_images/alesendo_oldgame.jpg`)로 교체. `tools/make_alesendo.py`가 칸(약 21.7px) 단위로 다시 뽑아 6배로 키움. 옷 색은 바꾸지 말 것(사용자 요청, 파란 로브). 이전 그림은 `assets/npc_alesendo_old.png`. sc 1.16, 상점 dy 40(카운터에 허리 아래 가려짐). 초상화는 그대로(짙은 회색 옷), 웃는 초상화는 넣지 않기로 함.
+- v0.43: 이야기 2편 「시나의 잃어버린 방울」(퀘스트 id `bell`). 사라진 가을 불빛을 끝낸 **다음 날**부터(S.lightsDay) 광장 시나에게 말 걸면 시작 → 오르가·브란 단서(S.bl) → 광장 분수(단풍나무) 앞에서 바람결 미니게임 → 웰라 빗자루에 엉킨 은방울(silverbell) → 시나에게 돌려주기(40G). `tools/playtest_late.py` 에 포함.
 - 완료된 최근 수정: 계단 오를 땐 왼쪽·내려갈 땐 오른쪽을 봄, 알레센도 초상화 배경 제거, 상점 NPC 카운터 겹침 수정, 첫 실행(터치 대기) 화면 꾸밈.
 - 임시 이미지(그림 생기면 교체): 시작 화면 배경 title_bg.jpg / 로고 title_logo.png, 다락방 배경(attic_bg), 마법스승 웃는 초상화, 올빼미.
 
 ## 다음 할 일 (우선순위)
 1. 이야기 1편·마법서 미니게임 손맛 확인(봇은 성공 처리만 함, 사람이 직접 해 봐야 함). 약초 부탁의 상점 구매 화면은 봇이 건너뜀.
-2. 이야기 2편 이후 작성 (8일차+ 부탁/이야기 확장, 마을 이름·올빼미의 첫 등불 설정 활용).
+2. 이야기 3편 이후 작성 (후보: 올빼미가 들려주는 '첫 등불의 약속'·마을 이름 유래, 브란의 가을 수프 대회). 2편 바람결 미니게임 손맛도 사람이 확인.
 3. 오디오·아이폰 실기기 확인(미검증, 홈 화면 앱으로), 앱 아이콘 그림 교체(지금은 임시), 릴리스 전 일지의 "테스트" 탭 숨기기.
 4. 그림 교체(위 임시 이미지 목록). 새 그림을 넣으면 반드시 겹침/크기/외곽선을 기존 캐릭터와 맞춰 스크린샷으로 확인(NPC 높이 기준: 아멜리아=100 대비 orga87, bran106, master104, alesendo106(새 도트 기준 sc1.16), wella91).
 

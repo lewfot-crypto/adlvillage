@@ -215,8 +215,9 @@ function sfx(name,a){
       def:기본값, min/max/step(range), options:[{v:값,l:글자}](select), apply:function(값){...}, run:function(){...}(button)}
    - 새 탭은 tab 이름만 새로 쓰면 생겨요.
    ===================================================================== */
-var VERSION='0.42 데모';
+var VERSION='0.43 데모';
 var CHANGES=[
+  '0.43  이야기 2편 \'시나의 잃어버린 방울\' 추가(사라진 가을 불빛을 끝낸 다음 날부터, 광장의 시나 → 오르가·브란 단서 → 광장 단풍나무 앞에서 바람결 → 웰라의 빗자루 → 시나에게 돌려주기)',
   '0.42  홈 화면에 추가해 앱처럼 플레이할 수 있게 준비(아이콘·전체 화면·오프라인 실행). 알레센도 서 있는 그림을 예전 게임의 도트 그림으로 교체(옷 색 그대로, 아멜리아와 같은 귀여운 비율). 상점에서는 카운터 뒤에 허리까지 보이게 위치 조정',
   '0.41  5~10일차 직접 플레이 점검(마법서 5장·엔딩·부탁 3개 모두 통과). 분수를 누르면 분수 뒤 가로등 위에 서던 문제 수정(이제 분수 앞에 섬), 아직 할 일이 남았는데 아침마다 \'이야기의 다음 장은 준비 중\'이 나오던 문구 수정. 상점 벽의 \'404\' 네온 간판을 초승달·별 문양 나무 간판으로 교체(구석에 작게 404 새김, 카페 이름 설정은 그대로)',
   '0.40  첫 실행 화면(터치 대기 화면)을 마을 배경·반짝이는 로고·떠오르는 불티로 꾸밈',
@@ -458,7 +459,12 @@ var QUESTS={
     sina:'저녁 무렵 광장의 시나에게 빛 한 줌 보여 주기'}},
   leaves:{title:'웰라의 단풍 책갈피',order:['collect','return'],steps:{
     collect:function(){return '광장에 떨어진 붉은 단풍잎 3장 줍기 ('+Object.keys(S.lp).length+'/3)'},
-    return:'웰라에게 단풍잎 가져다주기'}}
+    return:'웰라에게 단풍잎 가져다주기'}},
+  bell:{title:'시나의 잃어버린 방울',order:['clues','wind','wella','return'],steps:{
+    clues:function(){var L=S.bl||{};return '방울 소리를 들은 사람 찾기 (오르가'+(L.orga?' ✔':'')+' · 브란'+(L.bran?' ✔':'')+')'},
+    wind:'광장 단풍나무 앞에서 바람결로 방울 소리 실어 오기',
+    wella:'방울 소리가 머문 곳, 광장의 웰라에게 가 보기',
+    return:'시나에게 은방울 돌려주기'}}
 };
 var ITEMS={
   key:{n:'다락방 열쇠',d:'오르가 아주머니에게 받은 열쇠. 손잡이에 작은 별이 새겨져 있다.',keep:1},
@@ -468,6 +474,7 @@ var ITEMS={
   bookmark:{n:'단풍 책갈피',d:'웰라가 만들어 준 책갈피. 은은하게 가을 냄새가 난다.',sell:15},
   tea:{n:'별빛 차',d:'마시면 오늘 하루 마법 연습이 한결 쉬워져요. (연습 숙련도 효과 +1, 하루)',buy:12,sell:5,use:function(){S.buff.tea=S.day;showToast('별빛 차','오늘은 마법 연습이 쉬워져요',3000);sfx('toast')}},
   herb:{n:'마법 약초',d:'향긋한 푸른 잎. 수프나 차에 넣으면 향이 좋아진다.',buy:8,sell:3},
+  silverbell:{n:'시나의 은방울',d:'시나 목에 걸려 있던 작은 은방울. 흔들면 맑고 가늘게 딸랑인다.',keep:1},
   lightwisp:{n:'빛 한 줌',d:'푸른 꽃에서 모은 작은 빛. 손바닥 위에서 따뜻하고 가볍게 일렁인다.',keep:1},
   candy:{n:'사탕 하나',d:'누가 놓고 갔는지 모를 사탕. …소문은 사실이었을까.',keep:1},
   lantern:{n:'수확 등불',d:'등불제 날 광장에서 받은 작은 유리 등불. 안에서 따뜻한 빛이 일렁인다.',keep:1},
@@ -1367,7 +1374,45 @@ function lightsSina(){
        '(등불이 환하게 깨어난다. …여관, 선술집, 그다음 학교의 창문까지, 마을 등불이 차례로 따뜻하게 켜진다.)',
        {n:'시나',t:'…순서는 늘 같다냥. …올해는 네가 켜 줬다냥. …고맙다는 말은 안 한다냥.'},
        '(지붕 어딘가에서 "호오…" 하는 만족스러운 소리가 들린 것 같다.)'],
-    {done:function(){takeItem('lightwisp');S.lampsLit=true;addXp('glow');addXp('glow');addGold(60,'사라진 가을 불빛');qDone('lights');sfx('confirm')}});
+    {done:function(){takeItem('lightwisp');S.lampsLit=true;S.lightsDay=S.day;addXp('glow');addXp('glow');addGold(60,'사라진 가을 불빛');qDone('lights');sfx('confirm')}});
+}
+/* 이야기 2편: 시나의 잃어버린 방울 */
+function bellReady(){return !S.q.bell&&S.q.lights&&S.q.lights.st==='done'&&S.day>(S.lightsDay||0)}
+function bellStart(){
+  say(['(시나가 광장 바닥에 웅크리고 앉아 꼬리 끝만 탁, 탁 흔들고 있다.)','(…늘 목에서 딸랑이던 소리가 오늘은 들리지 않는다.)',
+       {n:'시나',t:'…아무 일도 없다냥. …쳐다보지 마라냥.'},
+       {n:'시나',t:'…방울이 없어진 것뿐이다냥. …은방울이다냥. …없으면 걸을 때 내 발소리가 안 난다냥.'},
+       {n:'시나',t:'…찾아 달라는 말은 안 했다냥. …그냥, 혹시 소리 들리면 알려 달라는 거다냥.'}],
+    {choices:[{label:'같이 찾아볼게',run:function(){S.bl={};say([{n:'시나',t:'…마음대로 해라냥. …어제 아침엔 분명히 있었다냥. …여관이랑 선술집에도 들렀다냥.'}],{done:function(){qStep('bell','clues')}})}},{label:'나중에'}]});
+}
+function bellClue(k){
+  if(!S.bl)S.bl={};S.bl[k]=1;sfx('toast');
+  if(S.bl.orga&&S.bl.bran){showToast('단서를 모았다','방울 소리는 바람을 타고 광장으로 갔어요',3200);qStep('bell','wind')}
+  else showToast('단서 '+((S.bl.orga?1:0)+(S.bl.bran?1:0))+'/2',k==='orga'?'오르가의 새벽 방울 소리':'브란이 들은 바람 소리',2800);
+  autoSave();
+}
+function bellWind(){
+  if(S.phase===3){say(['밤바람이 너무 잔잔하다. 해가 떠 있을 때 다시 와 보자.']);return}
+  say(['단풍나무 가지가 사르륵 흔들린다.','바람결로 광장의 바람을 한데 모으면, 멀리 있는 소리도 실려 올지 모른다.'],{done:function(){
+    startMini('breeze','practice',function(){addXp('breeze');
+      say(['(모인 바람이 단풍잎을 한 바퀴 휘감고 돌아온다.)','…딸랑.','(아주 가늘고 맑은 방울 소리. 바람이 지나간 쪽은… 웰라가 서 있는 곳이다.)'],{done:function(){qStep('bell','wella');autoSave()}})})}});
+}
+function bellWella(){
+  say([{n:'웰라',p:'wella',t:'아멜리아 님! 제 마법 실력이 늘었나 봐요. 오늘은 빗자루를 휘두를 때마다 딸랑딸랑 소리가 나요, 하하!'},
+       '(웰라가 빗자루를 한 번 휘두른다. …딸랑.)',
+       '(가만 보니 빗자루 솔 사이에 작은 은방울이 끈째 엉켜 있다.)',
+       {n:'웰라',p:'wella',t:'어, 이건… 시나 방울이잖아요?! 어제 광장 쓸 때 걸렸나 봐요. 어쩐지 소리가 너무 예쁘더라니!'},
+       {n:'웰라',p:'wella',t:'제 실력이 아니었네요, 하하… 미안하다고 꼭 전해 주세요. 아니, 제가 직접 사과할게요!'}],
+    {done:function(){giveItem('silverbell');qStep('bell','return');autoSave()}});
+}
+function bellReturn(){
+  say(['(은방울을 내밀자, 시나의 귀가 쫑긋 선다.)',
+       {n:'시나',t:'…!'},
+       {n:'시나',t:'…빗자루라니냥. …웰라답다냥. …어쩐지 어제 광장이 유난히 시끄러웠다냥.'},
+       '(아멜리아가 방울 끈을 시나 목에 다시 매어 준다. …딸랑.)',
+       {n:'시나',t:'…이제 내 발소리가 난다냥. …이 소리가 나야 다들 내가 온 줄 안다냥.'},
+       {n:'시나',t:'…고맙다는 말은 안 한다냥. …대신 이거 가져라냥. 분수 바닥에서 주운 거다냥.'}],
+    {done:function(){takeItem('silverbell');S.bellBack=true;addXp('breeze');addGold(40,'시나의 잃어버린 방울');qDone('bell');sfx('confirm')}});
 }
 function lightsOrga(){
   if(S.day<8)return false;
@@ -1388,6 +1433,7 @@ function lightsOrga(){
 function sayOrga(){
   S.metOrga=true;
   if(lightsOrga())return;
+  if(qActive('bell','clues')&&!(S.bl&&S.bl.orga)){say([{n:'오르가',p:'orga',t:'시나 방울 말이에요? 어제 새벽에 현관을 나설 땐 분명 딸랑딸랑 소리가 났어요.'},{n:'오르가',p:'orga',t:'그 애는 아침이면 꼭 광장부터 들르거든요. …광장 어딘가에 떨어뜨렸을지도 모르겠네요.'}],{done:function(){bellClue('orga')}});return}
   if(S.day>=2&&tellLore('orga'))return;
   if(S.day>=2){say([{n:'오르가',p:'orga',t:'어서 와요, 아멜리아. 잘 잤어요?'},{n:'오르가',p:'orga',t:'오늘은 광장으로 나가 보렴. 마을은 작으니 금방 익숙해질 거예요.'}]);return}
   if(S.key){say([{n:'오르가',p:'orga',t:'잊은 건 없죠? 계단은 저쪽이란다. 삐걱거려도 놀라지 말렴.'}]);return}
@@ -1401,6 +1447,8 @@ function sayOrga(){
 }
 function sayWella(){
   if(!S.metWella){playCut('wellaMeet');return}
+  if(qActive('bell','wella')){bellWella();return}
+  if(qActive('bell','clues')||qActive('bell','wind')){say([{n:'웰라',p:'wella',t:'시나 방울이요? 저는 못 봤어요. 오늘은 제 빗자루가 왠지 딸랑거려서 기분이 좋은 것 말고는요, 하하!'}]);return}
   if(S.day>=8&&!S.q.leaves){
     say([{n:'웰라',p:'wella',t:'아, 마침 잘 왔어요! 부탁이 하나 있는데요, 하하!'},
          {n:'웰라',p:'wella',t:'가을 책갈피를 만들고 싶은데, 광장에 떨어진 붉은 단풍잎이 딱 세 장 필요해요. 주워다 줄래요?'}],
@@ -1430,6 +1478,9 @@ function saySina(){
     return;
   }
   if(qActive('lights','sina')){lightsSina();return}
+  if(bellReady()&&S.phase<3){bellStart();return}
+  if(qActive('bell','return')){bellReturn();return}
+  if(qActive('bell')){say([{n:'시나',t:qActive('bell','clues')?'…여관이랑 선술집에 물어봐라냥. …나는 여기서 기다린다냥. 기다리는 거 아니다냥.':'…바람이 뭐라고 하더냐냥. …궁금한 거 아니다냥.'}]);return}
   if(S.lesson===2&&!(S.form&&S.form.sina)&&S.phase<3){playCut('sinaMagic');return}
   if(tellLore('sina'))return;
   if(sinaMagic()){say([{n:'시나',t:SINA_MAGIC_LINES[(sinaMi++)%SINA_MAGIC_LINES.length]}]);return}
@@ -1445,6 +1496,8 @@ function sayBran(){
     else if(S.day>=8&&!S.q.herb)ch.unshift({label:'약초 이야기를 듣는다',run:function(){
       say([{n:'브란',p:'bran',t:'…약초가 떨어졌어요. 상점에 가면 살 수 있을 텐데, 가게를 비울 수가 없어서.'},{n:'브란',p:'bran',t:'마법 약초 두 개만 사다 줄래요? …수고비는 드릴게요.'}],
         {choices:[{label:'다녀올게요',run:function(){qStep('herb',hasItem('herb',2)?'return':'buy')}},{label:'나중에요'}]})}});
+    if(qActive('bell','clues')&&!(S.bl&&S.bl.bran))ch.unshift({label:'방울 이야기를 묻는다',run:function(){
+      say([{n:'브란',p:'bran',t:'…방울이요. 어제 저녁에 문 닫을 때 들었어요. 광장 쪽에서요.'},{n:'브란',p:'bran',t:'…이상한 건, 바람이 불 때만 들렸다는 거예요. …바람에 물어보면 알려 줄지도요.'}],{done:function(){bellClue('bran')}})}});
     if(qActive('lights','clues')&&!(S.lt&&S.lt.bran))ch.unshift({label:'등불 이야기를 묻는다',run:function(){
       say([{n:'브란',p:'bran',t:'…등불 말이죠. 우리 집 난로도 불티가 자꾸 광장 쪽으로 날아가요.'},{n:'브란',p:'bran',t:'…누가 부르는 것처럼요. 방향은 상점 지붕 쪽이던데. …그쪽에 물어보는 게 빠르겠어요.'}],{done:function(){lightsClue('bran')}})}});
     if(festOn()&&!festF().cook)ch.unshift({label:'등불제 이야기를 듣는다',run:festBran});
@@ -1718,7 +1771,7 @@ function magicSpot(key){
     case 'school.sdesk0':return learned('flame');
     case 'shop.flower':return learned('glow');
     case 'inn1.fire':return learned('whisper')||(B.got&&!bookHas(1)&&bookReady()&&S.phase>=2);
-    case 'plaza.fountain':return learned('ripple')||(B.got&&!bookHas(2)&&bookReady()&&S.phase===1&&learned('breeze')&&magicLv('breeze')>=2);
+    case 'plaza.fountain':return qActive('bell','wind')||learned('ripple')||(B.got&&!bookHas(2)&&bookReady()&&S.phase===1&&learned('breeze')&&magicLv('breeze')>=2);
     case 'shop.counter':return bookP4ok();
     case 'attic.window':return learned('breeze')||bookP5ok();
     case 'school.shelf':return learned('shadow')||(B.got&&B.key&&!bookHas(3)&&bookReady());
@@ -2107,6 +2160,7 @@ function interact(o){
   var key=CN+'.'+o.id,i;
   if(ABSENT[key]&&!ABSENT[key][0].split('|').some(npcHere)){say([ABSENT[key][1]]);return}
   if(key==='inn1.fire'&&bookFire())return;
+  if(key==='plaza.fountain'&&qActive('bell','wind')&&learned('breeze')){bellWind();return}
   if(key==='plaza.fountain'&&bookFountain())return;
   if(key==='school.shelf'&&bookShelf())return;
   if(key==='shop.flower'&&qActive('lights','flower')&&learned('glow')){lightsFlower();return}
@@ -2197,7 +2251,7 @@ function wake(){
     say([['새소리와 함께 눈을 떴다. 창밖으로 따뜻한 아침 햇살이 스며든다.','잠에서 깼다. 창밖으로 한낮의 햇살이 환하게 들어온다.','잠에서 깼다. 창밖으로 노을이 번지고 있다.','잠에서 깼다. 창밖은 달빛이 고요하다.'][S.phase],'입학 첫날이야. 1층에 내려가 인사하고, 광장으로 가 보자.'],{done:function(){qStep('main','morning');autoSave()}});
   }else{
     var nx=S.lesson<2?(!S.metWella?'wella':'school'):(pendingLesson()||(festOn()?festStep():'free'));
-    var left=S.day<8||!bookF().ended||['lights','herb','leaves'].some(function(k){return !S.q[k]||S.q[k].st!=='done'});
+    var left=S.day<8||!bookF().ended||['lights','herb','leaves','bell'].some(function(k){return !S.q[k]||S.q[k].st!=='done'});
     var nt=nx==='free'?['새로운 하루가 시작됐다.',left?'오늘은 마을을 마음껏 둘러보자.':'이야기의 다음 장은 아직 준비 중이에요. 마을을 마음껏 둘러보세요.']:['새로운 하루가 시작됐다.','오늘도 광장을 지나 학교로 가 보자.'];
     if(nx==='fest'||nx==='festwait'||nx==='festday')nt=festWake();
     if(S.day===8)nt=nt.concat(['마을이 조금 익숙해졌다.','오늘부터는 마을 사람들의 부탁이 하나둘 들려오기 시작한다. 일지의 퀘스트 탭을 열어 보자.']);
