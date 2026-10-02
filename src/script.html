@@ -4,7 +4,7 @@
 var W=1116,H=2000,HW=80,HH=36,PS=0.66,SPD=250;
 var cv=document.getElementById('cv'),ctx=cv.getContext('2d');
 ctx.imageSmoothingEnabled=false;
-var dlg=document.getElementById('dlg'),nmEl=dlg.querySelector('.nm'),txEl=dlg.querySelector('.tx'),chEl=dlg.querySelector('.ch'),nxEl=dlg.querySelector('.nx'),ptEl=document.getElementById('pt');
+var chShownT=0,dlg=document.getElementById('dlg'),nmEl=dlg.querySelector('.nm'),txEl=dlg.querySelector('.tx'),chEl=dlg.querySelector('.ch'),nxEl=dlg.querySelector('.nx'),ptEl=document.getElementById('pt');
 var veil=document.getElementById('veil'),vl1=document.getElementById('vl1'),toastEl=document.getElementById('toast'),ttEl=document.getElementById('tt'),tgEl=document.getElementById('tg'),gbtn=document.getElementById('gbtn'),stage=document.getElementById('stage');
 
 /* ---------- 그림 ---------- */
@@ -215,8 +215,9 @@ function sfx(name,a){
       def:기본값, min/max/step(range), options:[{v:값,l:글자}](select), apply:function(값){...}, run:function(){...}(button)}
    - 새 탭은 tab 이름만 새로 쓰면 생겨요.
    ===================================================================== */
-var VERSION='0.44 데모';
+var VERSION='0.45 데모';
 var CHANGES=[
+  '0.45  이야기 3편 \'브란의 가을 수프 대회\' 추가(시나의 방울을 찾은 다음 날부터, 선술집 브란 → 약초·웰라의 단풍잎·스승님의 달빛 버섯 → 불꽃으로 불 맞추기 → 저녁 수프 대회). 첫 화면 불러오기 바를 금빛 그라데이션으로. 선택지가 막 나타난 순간의 터치는 무시(빨리 넘기다 잘못 고르는 일 방지)',
   '0.44  미니게임 6종을 도트 그림으로 새로 그림(펼친 마법책 판 + 양피지 제목 띠 + 금빛 보석 진행 표시, 빛은 점묘로 번짐). 마법학교 느낌으로 소품도 새로: 룬이 새겨진 돌 석판(바람결), 놋쇠 촛대와 도는 마법진(불꽃), 받침 위 수정구(빛 모으기), 놋쇠 종(속삭임), 물방울과 푸른 수정(물결), 해·달 메달(그림자). 대화창·설정·일지·상점 창을 나무 틀 + 양피지 바탕으로, 버튼·이름표·초상화 틀·상단 버튼·알림 창도 도트 틀로 교체. 테스트 탭의 미니게임 \'해 보기\'가 타이틀 화면에서 아무 반응이 없던 문제 수정(이제 타이틀에서도 바로 시작, 알림이 설정 창 뒤에 가려지던 문제도 수정). 연습 미니게임에 \'그만두기\' 버튼(Esc) 추가, 테스트 탭에서 한 미니게임은 끝나거나 그만두면 테스트 탭으로 돌아옴. 첫 화면 불러오기 바를 나무 틀 + 금빛 칸 막대로 교체',
   '0.43  이야기 2편 \'시나의 잃어버린 방울\' 추가(사라진 가을 불빛을 끝낸 다음 날부터, 광장의 시나 → 오르가·브란 단서 → 광장 단풍나무 앞에서 바람결 → 웰라의 빗자루 → 시나에게 돌려주기). 설정의 테스트 탭에 \'미니게임 바로 해 보기\' 버튼 6개 추가(기록에 남지 않음)',
   '0.42  홈 화면에 추가해 앱처럼 플레이할 수 있게 준비(아이콘·전체 화면·오프라인 실행). 알레센도 서 있는 그림을 예전 게임의 도트 그림으로 교체(옷 색 그대로, 아멜리아와 같은 귀여운 비율). 상점에서는 카운터 뒤에 허리까지 보이게 위치 조정',
@@ -472,7 +473,11 @@ var QUESTS={
     clues:function(){var L=S.bl||{};return '방울 소리를 들은 사람 찾기 (오르가'+(L.orga?' ✔':'')+' · 브란'+(L.bran?' ✔':'')+')'},
     wind:'광장 단풍나무 앞에서 바람결로 방울 소리 실어 오기',
     wella:'방울 소리가 머문 곳, 광장의 웰라에게 가 보기',
-    return:'시나에게 은방울 돌려주기'}}
+    return:'시나에게 은방울 돌려주기'}},
+  soup:{title:'브란의 가을 수프 대회',order:['gather','cook','judge'],steps:{
+    gather:function(){return '가을 수프 재료 모아 브란에게 (약초'+(hasItem('herb')?' ✔':'')+' · 붉은 단풍잎'+(hasItem('redleaf')?' ✔':'')+' · 달빛 버섯'+(hasItem('moonshroom')?' ✔':'')+')'},
+    cook:'선술집 브란과 수프 불 맞추기',
+    judge:'저녁에 선술집에서 수프 대회 지켜보기'}}
 };
 var ITEMS={
   key:{n:'다락방 열쇠',d:'오르가 아주머니에게 받은 열쇠. 손잡이에 작은 별이 새겨져 있다.',keep:1},
@@ -482,6 +487,8 @@ var ITEMS={
   bookmark:{n:'단풍 책갈피',d:'웰라가 만들어 준 책갈피. 은은하게 가을 냄새가 난다.',sell:15},
   tea:{n:'별빛 차',d:'마시면 오늘 하루 마법 연습이 한결 쉬워져요. (연습 숙련도 효과 +1, 하루)',buy:12,sell:5,use:function(){S.buff.tea=S.day;showToast('별빛 차','오늘은 마법 연습이 쉬워져요',3000);sfx('toast')}},
   herb:{n:'마법 약초',d:'향긋한 푸른 잎. 수프나 차에 넣으면 향이 좋아진다.',buy:8,sell:3},
+  redleaf:{n:'제일 붉은 단풍잎',d:'웰라가 골라 준 단풍잎. 수프에 넣으면 가을 빛깔이 난다고 한다.',keep:1},
+  moonshroom:{n:'달빛 버섯',d:'학교 뒤뜰 그늘에서 자란 버섯. 갓에 은은한 은빛이 돈다.',keep:1},
   silverbell:{n:'시나의 은방울',d:'시나 목에 걸려 있던 작은 은방울. 흔들면 맑고 가늘게 딸랑인다.',keep:1},
   lightwisp:{n:'빛 한 줌',d:'푸른 꽃에서 모은 작은 빛. 손바닥 위에서 따뜻하고 가볍게 일렁인다.',keep:1},
   candy:{n:'사탕 하나',d:'누가 놓고 갔는지 모를 사탕. …소문은 사실이었을까.',keep:1},
@@ -1124,10 +1131,11 @@ function finishLine(){
   if(qi>=q.length-1&&choices){
     waitChoice=true;selIdx=0;
     choices.forEach(function(c,ci){
+      chShownT=performance.now();
       var b=document.createElement('button');b.type='button';b.textContent=c.label;b.className='pbtn'+(ci===0?' sel':'');
       b.addEventListener('pointerenter',function(){setSel(ci)});
       b.addEventListener('pointerdown',function(e){e.stopPropagation()});
-      b.addEventListener('click',function(e){e.stopPropagation();sfx('confirm');closeDlg();c.run&&c.run()});
+      b.addEventListener('click',function(e){e.stopPropagation();if(performance.now()-chShownT<300)return;sfx('confirm');closeDlg();c.run&&c.run()});
       chEl.appendChild(b);
     });
   }else nxEl.style.visibility='visible';
@@ -1437,7 +1445,42 @@ function bellReturn(){
        '(아멜리아가 방울 끈을 시나 목에 다시 매어 준다. …딸랑.)',
        {n:'시나',t:'…이제 내 발소리가 난다냥. …이 소리가 나야 다들 내가 온 줄 안다냥.'},
        {n:'시나',t:'…고맙다는 말은 안 한다냥. …대신 이거 가져라냥. 분수 바닥에서 주운 거다냥.'}],
-    {done:function(){takeItem('silverbell');S.bellBack=true;addXp('breeze');addGold(40,'시나의 잃어버린 방울');qDone('bell');sfx('confirm')}});
+    {done:function(){takeItem('silverbell');S.bellBack=true;S.bellDay=S.day;addXp('breeze');addGold(40,'시나의 잃어버린 방울');qDone('bell');sfx('confirm')}});
+}
+/* 이야기 3편: 브란의 가을 수프 대회 */
+function soupReady(){return !S.q.soup&&S.q.bell&&S.q.bell.st==='done'&&S.day>(S.bellDay||0)}
+function soupHave(){return hasItem('herb')&&hasItem('redleaf')&&hasItem('moonshroom')}
+var B_=function(t){return {n:'브란',p:'bran',t:t}};
+function soupStart(){
+  say([B_('…아멜리아. 잠깐 시간 있어요?'),
+       B_('…해마다 이맘때 선술집에서 작은 수프 대회를 해요. 마을 사람 몇이 모여서 맛을 보는 모임이에요.'),
+       B_('…늘 심사만 했는데, 올해는 저도 한 냄비 내 보려고요. 늘 끓이던 거 말고, 가을 맛이 나는 걸로.'),
+       B_('…재료가 세 가지 필요해요. 상점의 마법 약초, 광장의 붉은 단풍잎, 그리고 학교 뒤뜰의 달빛 버섯.'),
+       B_('…가게를 비울 수가 없어서요. 부탁해도 될까요.')],
+    {choices:[{label:'다녀올게요',run:function(){say([B_('…고마워요. 단풍잎은 웰라가, 버섯은 스승님이 알 거예요.'),B_('…재료가 모이면 불 맞추는 것도 도와줘요. 마법 쓰는 손이 필요해요.')],{done:function(){qStep('soup','gather')}})}},{label:'나중에요'}]});
+}
+function soupGive(){
+  takeItem('herb');takeItem('redleaf');takeItem('moonshroom');qStep('soup','cook');
+  say(['(약초와 단풍잎, 달빛 버섯을 건네자 브란이 하나씩 냄비 옆에 늘어놓는다.)',B_('…좋은 재료들이네요. 다들 마음 써 줬구나.')],{done:soupCook});
+}
+function soupCook(){
+  say([B_('…이제 불이에요. 센 불은 향을 날리고, 약한 불은 맛을 못 깨워요.'),B_('…금빛 고리가 초록 띠에 닿을 때, 딱 그만큼만 불을 붙여 줘요.')],{done:function(){
+    startMini('flame','practice',function(){addXp('flame');qStep('soup','judge');
+      say(['(냄비에서 단풍 빛깔 김이 피어오른다. 약초 향과 버섯의 고소한 냄새가 선술집을 채운다.)',B_('…됐어요. 이 불이에요.'),B_('…대회는 저녁이에요. 해 질 무렵에 와 줘요.')],{done:autoSave})})}});
+}
+function soupJudge(){
+  if(S.phase!==2){say([B_('…수프는 뭉근히 끓는 중이에요. 대회는 해 질 무렵이에요.')]);return}
+  say(['(저녁. 선술집에 등불이 켜지고, 오르가와 웰라, 마법스승이 나란히 앉았다.)',
+       {n:'오르가',p:'orga',t:'어머, 향이 정말 좋아요. 브란이 이런 솜씨를 숨겨 두고 있었다니.'},
+       {n:'웰라',p:'wella',t:'단풍잎 맛이 나요! …아니, 단풍잎은 원래 맛이 없는데, 가을 맛이 나요! 하하!'},
+       {n:'마법스승',p:'master',t:'…불이 알맞다. 버섯 향이 살아 있구나. 누가 불을 맞췄는지 알겠다.'},
+       '(창틀에서 시나가 코를 킁킁거린다.)',
+       {n:'시나',t:'…한 숟갈만 남겨라냥. …먹고 싶은 거 아니다냥. 확인하는 거다냥.'},
+       '(오르가가 나무 숟가락 모양의 작은 메달을 브란에게 건넨다. "올해의 가장 따뜻한 수프".)',
+       B_('…아멜리아 덕분이에요. 상금은 반씩 나눠요.'),
+       B_('…그리고 수프에 이름을 붙여야 한대요. …\'아멜리아의 가을 수프\'. 어때요.'),
+       '(브란이 아주 조금, 웃은 것 같다.)'],
+    {done:function(){S.autumnSoup=true;giveItem('soup',2);addXp('flame');addGold(50,'브란의 가을 수프 대회');qDone('soup')}});
 }
 function lightsOrga(){
   if(S.day<8)return false;
@@ -1473,6 +1516,7 @@ function sayOrga(){
 function sayWella(){
   if(!S.metWella){playCut('wellaMeet');return}
   if(qActive('bell','wella')){bellWella();return}
+  if(qActive('soup','gather')&&!hasItem('redleaf')){say([{n:'웰라',p:'wella',t:'단풍잎이요? 브란 님 수프에요?! 제 단풍잎이 수프에 들어간다니, 영광이에요, 하하!'},{n:'웰라',p:'wella',t:'책갈피 만들 때 제일 붉은 걸 하나 아껴 뒀거든요. 자요, 이거예요!'}],{done:function(){giveItem('redleaf');autoSave()}});return}
   if(qActive('bell','clues')||qActive('bell','wind')){say([{n:'웰라',p:'wella',t:'시나 방울이요? 저는 못 봤어요. 오늘은 제 빗자루가 왠지 딸랑거려서 기분이 좋은 것 말고는요, 하하!'}]);return}
   if(S.day>=8&&!S.q.leaves){
     say([{n:'웰라',p:'wella',t:'아, 마침 잘 왔어요! 부탁이 하나 있는데요, 하하!'},
@@ -1521,6 +1565,11 @@ function sayBran(){
     else if(S.day>=8&&!S.q.herb)ch.unshift({label:'약초 이야기를 듣는다',run:function(){
       say([{n:'브란',p:'bran',t:'…약초가 떨어졌어요. 상점에 가면 살 수 있을 텐데, 가게를 비울 수가 없어서.'},{n:'브란',p:'bran',t:'마법 약초 두 개만 사다 줄래요? …수고비는 드릴게요.'}],
         {choices:[{label:'다녀올게요',run:function(){qStep('herb',hasItem('herb',2)?'return':'buy')}},{label:'나중에요'}]})}});
+    if(soupReady())ch.unshift({label:'수프 대회 이야기를 듣는다',run:soupStart});
+    if(qActive('soup','gather')){if(soupHave())ch.unshift({label:'수프 재료를 건넨다',run:soupGive});
+      else ch.unshift({label:'수프 재료 이야기',run:function(){say([B_('…약초는 상점, 단풍잎은 웰라, 달빛 버섯은 스승님이에요.'),B_('…천천히 해요. 수프는 기다려 줘요.')])}})}
+    if(qActive('soup','cook'))ch.unshift({label:'수프 불을 맞춘다',run:soupCook});
+    if(qActive('soup','judge'))ch.unshift({label:'수프 대회',run:soupJudge});
     if(qActive('bell','clues')&&!(S.bl&&S.bl.bran))ch.unshift({label:'방울 이야기를 묻는다',run:function(){
       say([{n:'브란',p:'bran',t:'…방울이요. 어제 저녁에 문 닫을 때 들었어요. 광장 쪽에서요.'},{n:'브란',p:'bran',t:'…이상한 건, 바람이 불 때만 들렸다는 거예요. …바람에 물어보면 알려 줄지도요.'}],{done:function(){bellClue('bran')}})}});
     if(qActive('lights','clues')&&!(S.lt&&S.lt.bran))ch.unshift({label:'등불 이야기를 묻는다',run:function(){
@@ -2372,6 +2421,7 @@ function interact(o){
   /* 학교 */
   case 'school.teacher':
     if(masterBook())break;
+    if(qActive('soup','gather')&&!hasItem('moonshroom')&&S.lesson===2){say([{n:'마법스승',p:'master',t:'…달빛 버섯 말이냐. 뒤뜰 그늘에서 자란다. 브란이 부탁했겠지.'},{n:'마법스승',p:'master',t:'…그 사람 수프는 나도 안다. 가져가라. 대신, 맛이 어땠는지 나중에 말해 다오.'}],{done:function(){giveItem('moonshroom');autoSave()}});break}
     if(qActive('lights','clues')&&!(S.lt&&S.lt.master)&&S.lesson===2){say([{n:'마법스승',p:'master',t:'…등불 말이냐. 교실 초가 요 며칠 지붕 쪽으로 기운다. 바람 한 점 없는데도.'},{n:'마법스승',p:'master',t:'마법 상점의 첫 등불을 살펴보아라. …네가 다녀오면 답이 나올 것이다.'}],{done:function(){lightsClue('master')}});break}
     if(festOn()){festMaster();break}
     if(S.lesson===2&&tellLore('master'))break;
@@ -2405,7 +2455,7 @@ function wake(){
     say([['새소리와 함께 눈을 떴다. 창밖으로 따뜻한 아침 햇살이 스며든다.','잠에서 깼다. 창밖으로 한낮의 햇살이 환하게 들어온다.','잠에서 깼다. 창밖으로 노을이 번지고 있다.','잠에서 깼다. 창밖은 달빛이 고요하다.'][S.phase],'입학 첫날이야. 1층에 내려가 인사하고, 광장으로 가 보자.'],{done:function(){qStep('main','morning');autoSave()}});
   }else{
     var nx=S.lesson<2?(!S.metWella?'wella':'school'):(pendingLesson()||(festOn()?festStep():'free'));
-    var left=S.day<8||!bookF().ended||['lights','herb','leaves','bell'].some(function(k){return !S.q[k]||S.q[k].st!=='done'});
+    var left=S.day<8||!bookF().ended||['lights','herb','leaves','bell','soup'].some(function(k){return !S.q[k]||S.q[k].st!=='done'});
     var nt=nx==='free'?['새로운 하루가 시작됐다.',left?'오늘은 마을을 마음껏 둘러보자.':'이야기의 다음 장은 아직 준비 중이에요. 마을을 마음껏 둘러보세요.']:['새로운 하루가 시작됐다.','오늘도 광장을 지나 학교로 가 보자.'];
     if(nx==='fest'||nx==='festwait'||nx==='festday')nt=festWake();
     if(S.day===8)nt=nt.concat(['마을이 조금 익숙해졌다.','오늘부터는 마을 사람들의 부탁이 하나둘 들려오기 시작한다. 일지의 퀘스트 탭을 열어 보자.']);

@@ -65,9 +65,10 @@ body{
 #boot .bbar::before,#boot .bbar::after{content:''; position:absolute; top:50%; width:calc(var(--px)*3); height:calc(var(--px)*3); margin-top:calc(var(--px)*-1.5); background:#f2b24c; transform:rotate(45deg); box-shadow:0 0 0 var(--px) #1a0e07}
 #boot .bbar::before{left:calc(var(--px)*-7)}
 #boot .bbar::after{right:calc(var(--px)*-7)}
-#boot .bbar i{display:block; height:100%; width:0; transition:width .2s steps(6);
-  background:linear-gradient(#ffe39a 0 20%,#f2b24c 20% 70%,#b8701e 70% 100%);
-  -webkit-mask:repeating-linear-gradient(90deg,#000 0 calc(var(--px)*4),transparent calc(var(--px)*4) calc(var(--px)*5)); mask:repeating-linear-gradient(90deg,#000 0 calc(var(--px)*4),transparent calc(var(--px)*4) calc(var(--px)*5))}
+#boot .bbar i{display:block; position:relative; height:100%; width:0; transition:width .2s;
+  background:linear-gradient(90deg,#8a3f12 0%,#c9701e 35%,#f2b24c 70%,#ffe39a 100%)}
+#boot .bbar i::before{content:''; position:absolute; left:0; right:0; top:0; height:var(--px); background:rgba(255,246,208,.55)}
+#boot .bbar i::after{content:''; position:absolute; left:0; right:0; bottom:0; height:var(--px); background:rgba(90,40,10,.45)}
 #boot .bbar.full i{animation:bshine 1.6s steps(8) infinite}
 @keyframes bshine{50%{filter:brightness(1.25)}}
 #boot .bp{color:#e8d6b0; font-size:1em; min-height:1.6em; text-shadow:0 2px 0 rgba(0,0,0,.7)}

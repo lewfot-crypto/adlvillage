@@ -22,7 +22,7 @@ async def main():
                     if t!=last[0] and len(t)>6 and t.startswith(last[0][:6])==False or t!=last[0] and ch:
                         print('   ',t[:120],('  ?'+'/'.join(ch)) if ch else '',flush=True)
                     last[0]=t
-                    if ch: await ev("document.querySelector('#dlg .ch > *').click()")
+                    if ch: await pg.wait_for_timeout(350); await ev("document.querySelector('#dlg .ch > *').click()")
                     else: await pg.mouse.click(280,880)
                 elif st=='mini':
                     await ev("(()=>{const M=__g.mini();if(M){M.n=M.need;M.ok=true;M.fin=0.01}})()")
