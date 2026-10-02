@@ -19,7 +19,7 @@ async def main():
                     t=await ev("(()=>{const d=document.getElementById('dlg');return d.querySelector('.nm').textContent+': '+d.querySelector('.tx').textContent})()")
                     if t!=last and len(t)>6: print('   ',t[:100],flush=True); last=t
                     ch=await ev("document.querySelectorAll('#dlg .ch > *').length")
-                    if ch: await ev("[...document.querySelectorAll('#dlg .ch > *')].pop().click()")
+                    if ch: await pg.wait_for_timeout(350); await ev("[...document.querySelectorAll('#dlg .ch > *')].pop().click()")
                     else: await pg.mouse.click(280,880)
                 await pg.wait_for_timeout(400)
             return False

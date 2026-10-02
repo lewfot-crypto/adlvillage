@@ -1,12 +1,12 @@
 <title>아델라인 빌리지</title>
 <style>
 /*FONT*/
+/*UI*/
 :root{
-  --bg:#0b0813; --panel:#2b1c14; --gold:#f2b24c; --deep:#1b110b; --edge2:#8a5a30;
-  --ink:#f6ead2; --muted:#b9a88a; --teal:#3fb8b0; --wood:#5a3a24;
+  --gold:#f2b24c; --edge2:#8a5a30;
+  --ink:#f6ead2; --muted:#b9a88a; --teal:#3fb8b0;
   --font:'Galmuri11','Gowun Dodum','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
-  --notch:polygon(0 6px,6px 6px,6px 0,calc(100% - 6px) 0,calc(100% - 6px) 6px,100% 6px,100% calc(100% - 6px),calc(100% - 6px) calc(100% - 6px),calc(100% - 6px) 100%,6px 100%,6px calc(100% - 6px),0 calc(100% - 6px));
-  color-scheme:dark;
+  color-scheme:dark; --px:3px; --fw:calc(var(--px)*8);
 }
 html,body{height:100%;margin:0}
 body{
@@ -14,29 +14,36 @@ body{
   display:flex; align-items:center; justify-content:center; overflow:hidden;
   -webkit-user-select:none; user-select:none; -webkit-touch-callout:none; touch-action:none;
 }
-.stage{position:relative; line-height:0; font-size:15px}
+.stage{position:relative; line-height:0; font-size:15px; --fw:calc(var(--px)*8)}
 #cv{image-rendering:pixelated; background:#000; display:block; touch-action:none}
 /* 도트 상자: 모서리가 계단처럼 깎인 틀 */
-.bx{position:absolute; inset:0; background:var(--panel); clip-path:var(--notch);
-  box-shadow:inset 0 0 0 3px var(--gold), inset 0 0 0 6px var(--panel), inset 0 0 0 8px var(--edge2); pointer-events:none}
-#dlg{position:absolute; left:3%; right:3%; bottom:2.2%; line-height:1.6; padding:1.1em 1.3em .95em; font-size:1em; cursor:pointer; color:var(--ink)}
+.bx{position:absolute; inset:0; pointer-events:none; image-rendering:pixelated; border-style:solid; border-width:var(--fw);
+  border-image:var(--ui-frame-dark) 8 fill / var(--fw) stretch; filter:drop-shadow(0 var(--px) 0 rgba(0,0,0,.45))}
+/* 양피지 틀: 대화창·설정·안내 */
+#dlg .bx,#set .bx,#guide .bx{border-image:var(--ui-frame-parch) 8 / var(--fw) stretch;
+  background:#ecd9ad var(--ui-tex-parch) repeat; background-size:calc(var(--px)*32); background-clip:padding-box; background-origin:padding-box}
+#dlg,#set,#guide{--ink:#3b2414; --muted:#7c5a38; --gold:#9a5410; --edge2:#a9844f}
+#dlg{position:absolute; left:3%; right:3%; bottom:2.2%; line-height:1.6; padding:calc(var(--fw) + .55em) calc(var(--fw) + .7em) calc(var(--fw) + .35em); font-size:1em; cursor:pointer; color:var(--ink)}
 #dlg[hidden]{display:none}
+#dlg .nm:not([hidden]) ~ .tx{margin-top:.8em}
 #dlg .tx{position:relative; min-height:3.2em; white-space:pre-wrap; word-break:keep-all}
-#dlg .nm{position:absolute; top:-1.05em; left:.9em; padding:.05em .8em; background:var(--gold); color:var(--deep); font-size:.85em; line-height:1.5; clip-path:var(--notch)}
-#dlg .nx{position:absolute; right:.8em; bottom:.35em; color:var(--gold); font-size:.8em; animation:bl .9s steps(2) infinite}
+#dlg .nm{position:absolute; top:calc(var(--fw)/2 - .6em - var(--px)*4); left:calc(var(--fw) + .3em); padding:var(--px) calc(var(--px)*2 + .5em); color:#ffe6a8; font-size:.85em; line-height:1.4; image-rendering:pixelated; border-style:solid; border-width:calc(var(--px)*3); border-image:var(--ui-plate-gold) 4 fill / calc(var(--px)*4) stretch; text-shadow:0 var(--px) 0 #1a0e07}
+#dlg .nx{position:absolute; right:calc(var(--fw) + .3em); bottom:calc(var(--fw) - .2em); color:var(--gold); font-size:.8em; animation:bl .9s steps(2) infinite}
 #dlg .ch{position:relative; display:flex; gap:.6em; flex-wrap:wrap; margin-top:.5em}
-.pbtn{position:relative; font:inherit; font-size:.95em; color:var(--ink); background:var(--wood); border:0; padding:.4em 1em; cursor:pointer; clip-path:var(--notch); box-shadow:none; line-height:1.4}
-.pbtn::before{content:''; position:absolute; inset:0; box-shadow:inset 0 0 0 2px var(--edge2); pointer-events:none}
-.pbtn.sel{background:#7a4f2f; color:#fff3d0}
-.pbtn.sel::before{box-shadow:inset 0 0 0 2px var(--gold)}
-.pbtn.sel::after{content:'◀'; position:absolute; right:.35em; top:50%; transform:translateY(-50%) scale(.6); color:var(--gold)}
+.pbtn{position:relative; font:inherit; font-size:.95em; color:#f6ead2; background:transparent; padding:calc(.4em - var(--px)*3) calc(1em - var(--px)*3); cursor:pointer; line-height:1.4; image-rendering:pixelated;
+  border-style:solid; border-width:calc(var(--px)*3); border-image:var(--ui-plate) 4 fill / calc(var(--px)*4) stretch; text-shadow:0 var(--px) 0 #2a1608}
+.pbtn:active{transform:translateY(var(--px))}
+.pbtn.sel{border-image-source:var(--ui-plate-sel); color:#fff3d0}
+.pbtn.sel::after{content:'◀'; position:absolute; right:.35em; top:50%; transform:translateY(-50%) scale(.6); color:#ffe39a}
 .pbtn.sel{padding-right:1.5em}
-#pt{position:absolute; right:1em; bottom:calc(100% - 5px); width:8.6em; height:auto; image-rendering:auto; filter:drop-shadow(0 3px 0 rgba(0,0,0,.55)); pointer-events:none}
+#pt{position:absolute; right:1em; bottom:calc(100% - var(--px)*2); width:8.6em; height:auto; image-rendering:auto; pointer-events:none; box-sizing:content-box;
+  border-style:solid; border-width:calc(var(--px)*4); border-image:var(--ui-plate-gold) 4 / calc(var(--px)*4) stretch;
+  background:radial-gradient(ellipse at 50% 35%,#5a4060 0,#2e2236 55%,#1c1424 100%); background-clip:padding-box; filter:drop-shadow(0 var(--px) 0 rgba(0,0,0,.5))}
 #pt[hidden]{display:none}
 .ptf{position:absolute; left:.9em; bottom:calc(100% + .9em); width:6.4em; height:8em; pointer-events:none}
 @keyframes bl{50%{opacity:0}}
 /* 상단 알림 */
-#toast{position:absolute; top:2%; left:50%; transform:translate(-50%,-10px); max-width:88%; padding:.55em 1.2em; line-height:1.5; text-align:center; color:var(--ink); font-size:.95em; opacity:0; transition:opacity .45s, transform .45s; pointer-events:none; white-space:nowrap}
+#toast{position:absolute; z-index:6; top:2%; left:50%; transform:translate(-50%,-10px); max-width:88%; padding:calc(var(--fw) + .1em) calc(var(--fw) + .6em); line-height:1.5; text-align:center; color:var(--ink); font-size:.95em; opacity:0; transition:opacity .45s, transform .45s; pointer-events:none; white-space:nowrap}
 #toast.on{opacity:1; transform:translate(-50%,0)}
 #toast .tt{position:relative}
 #toast .tg{position:relative; color:var(--gold); font-size:.85em; display:block}
@@ -50,10 +57,19 @@ body{
 #boot .bn{font-size:2.35em; line-height:1.15; color:#ffe2a6; text-shadow:0 3px 0 #7a4a1c,0 0 22px rgba(242,178,76,.55),0 0 52px rgba(242,178,76,.3); animation:bglow 3.2s ease-in-out infinite}
 #boot .bn small{display:block; font-size:.5em; letter-spacing:.5em; color:var(--gold); margin-top:.3em; text-shadow:0 2px 0 #5a3410}
 #boot .bl{display:flex; align-items:center; gap:10px; color:var(--gold); font-size:.8em; margin:2px 0 6px}
-#boot .bl i{display:block; width:54px; height:2px; background:linear-gradient(90deg,transparent,var(--gold))}
+#boot .bl i{display:block; width:54px; height:calc(var(--px)); background:repeating-linear-gradient(90deg,var(--gold) 0 calc(var(--px)*2),transparent calc(var(--px)*2) calc(var(--px)*3)); box-shadow:0 var(--px) 0 #5a3410}
 #boot .bl i:last-child{transform:scaleX(-1)}
-#boot .bbar{width:46%; height:8px; background:#1a1224; box-shadow:inset 0 0 0 2px var(--edge2),0 0 14px rgba(242,178,76,.15)}
-#boot .bbar i{display:block; height:100%; width:0; background:linear-gradient(90deg,#c9812c,#ffd37a); transition:width .2s}
+#boot .bbar{position:relative; width:50%; height:calc(var(--px)*5); padding:var(--px); image-rendering:pixelated; border-style:solid; border-width:calc(var(--px)*4);
+  border-image:var(--ui-plate-gold) 4 fill / calc(var(--px)*4) stretch; filter:drop-shadow(0 var(--px) 0 rgba(0,0,0,.6)); box-sizing:content-box}
+#boot .bbar::before,#boot .bbar::after{content:''; position:absolute; top:50%; width:calc(var(--px)*3); height:calc(var(--px)*3); margin-top:calc(var(--px)*-1.5); background:#f2b24c; transform:rotate(45deg); box-shadow:0 0 0 var(--px) #1a0e07}
+#boot .bbar::before{left:calc(var(--px)*-7)}
+#boot .bbar::after{right:calc(var(--px)*-7)}
+#boot .bbar i{display:block; position:relative; height:100%; width:0; transition:width .2s;
+  background:linear-gradient(90deg,#8a3f12 0%,#c9701e 35%,#f2b24c 70%,#ffe39a 100%)}
+#boot .bbar i::before{content:''; position:absolute; left:0; right:0; top:0; height:var(--px); background:rgba(255,246,208,.55)}
+#boot .bbar i::after{content:''; position:absolute; left:0; right:0; bottom:0; height:var(--px); background:rgba(90,40,10,.45)}
+#boot .bbar.full i{animation:bshine 1.6s steps(8) infinite}
+@keyframes bshine{50%{filter:brightness(1.25)}}
 #boot .bp{color:#e8d6b0; font-size:1em; min-height:1.6em; text-shadow:0 2px 0 rgba(0,0,0,.7)}
 #boot .bp.on{animation:blink 1.4s infinite; color:#fff0cc}
 #boot .em{position:absolute; bottom:-12px; width:5px; height:5px; background:#f2b24c; box-shadow:0 0 8px #f2b24c; opacity:0; animation:emb 7s linear infinite}
@@ -62,26 +78,35 @@ body{
 @keyframes blink{50%{opacity:.35}}
 #title{position:absolute; inset:0; z-index:5; display:flex; flex-direction:column; justify-content:flex-end; align-items:center; padding:0 0 9%; gap:10px; pointer-events:none}
 #title[hidden]{display:none}
-#title button{pointer-events:auto; min-width:11em; padding:.55em 1em}
+#title button{pointer-events:auto; min-width:11.5em; padding:calc(.5em - var(--px)*3) 1em; font-size:1.05em; letter-spacing:.12em; color:#ffe9b8;
+  border-width:calc(var(--px)*6); border-image:var(--ui-btn-title) 6 fill / calc(var(--px)*6) stretch; text-shadow:0 var(--px) 0 #1a0e07,0 0 .5em rgba(242,178,76,.25); filter:drop-shadow(0 var(--px) 0 rgba(0,0,0,.6))}
+#title button:hover,#title button:focus-visible{border-image-source:var(--ui-btn-title-on); color:#fff6d8; outline:none}
+#title button::before,#title button::after{content:''; position:absolute; top:50%; width:calc(var(--px)*3); height:calc(var(--px)*3); margin-top:calc(var(--px)*-1.5); background:#f2b24c; transform:rotate(45deg) scale(0); box-shadow:0 0 0 var(--px) #1a0e07; transition:transform .12s steps(2)}
+#title button::before{left:calc(var(--px)*-9)}
+#title button::after{right:calc(var(--px)*-9)}
+#title button:hover::before,#title button:hover::after,#title button:focus-visible::before,#title button:focus-visible::after{transform:rotate(45deg) scale(1)}
 #title .tf{pointer-events:none; color:var(--muted); font-size:.75em; text-align:center; margin-top:.6em; line-height:1.6; max-width:22em}
-#guide{position:absolute; inset:8% 6%; z-index:7; display:flex; flex-direction:column; padding:1.2em 1.3em; line-height:1.7; color:var(--ink)}
+#guide{position:absolute; inset:8% 6%; z-index:7; display:flex; flex-direction:column; padding:calc(var(--fw) + .5em) calc(var(--fw) + .6em); line-height:1.7; color:var(--ink)}
 #guide[hidden]{display:none}
 #guide .gh{position:relative; font-size:1.15em; color:var(--gold); margin-bottom:.6em}
 #guide .gb{position:relative; flex:1; overflow-y:auto; white-space:pre-wrap}
 #guide .gf{position:relative; display:flex; justify-content:space-between; align-items:center; margin-top:.8em; color:var(--muted); font-size:.85em}
 #cskip{position:absolute; right:3%; top:11%; z-index:4}
+#mquit{position:absolute; left:50%; top:80.6%; transform:translateX(-50%); z-index:4; font-size:.85em}
+#mquit:active{transform:translate(-50%,var(--px))}
+#mquit[hidden]{display:none}
 .hbtn{position:absolute; top:1.6%; width:2.6em; height:2.6em; border:0; padding:0; background:transparent; cursor:pointer; line-height:1}
-.hbtn .bx{box-shadow:inset 0 0 0 2px var(--gold), inset 0 0 0 4px var(--panel)}
-.hbtn:hover .bx{background:#3b261b}
+.hbtn .bx{border-width:calc(var(--px)*4); border-image:var(--ui-plate-gold) 4 fill / calc(var(--px)*4) stretch}
+.hbtn:active{transform:translateY(var(--px))}
 #sbtn{left:3%}
 #sbtn i{position:absolute; left:50%; top:50%; width:1.1em; height:2px; margin-left:-.55em; background:var(--gold); box-shadow:0 -.38em 0 var(--gold), 0 .38em 0 var(--gold)}
-#set{position:absolute; inset:3.5% 4%; z-index:5; display:flex; flex-direction:column; padding:1.2em 1.3em 1em; line-height:1.55; color:var(--ink)}
+#set{position:absolute; inset:3.5% 4%; z-index:5; display:flex; flex-direction:column; padding:calc(var(--fw) + .5em) calc(var(--fw) + .6em) calc(var(--fw) + .3em); line-height:1.55; color:var(--ink)}
 #set[hidden]{display:none}
 #set .sh{position:relative; display:flex; align-items:center; justify-content:space-between; margin-bottom:.6em}
-#set .sh b{font-size:1.15em; color:var(--gold); font-weight:normal}
+#set .sh b{font-size:1.15em; color:var(--gold); font-weight:normal; text-shadow:0 var(--px) 0 #f6e7c2}
 #set .tabs{position:relative; display:flex; gap:.4em; flex-wrap:wrap; margin-bottom:.7em}
 #set .body{position:relative; flex:1; overflow-y:auto; padding-right:.3em; scrollbar-width:thin; scrollbar-color:var(--edge2) transparent; touch-action:pan-y}
-#set .row{display:flex; align-items:center; justify-content:space-between; gap:.8em; padding:.5em 0; border-bottom:2px dotted #4a3022}
+#set .row{display:flex; align-items:center; justify-content:space-between; gap:.8em; padding:.5em 0; border-bottom:var(--px) dashed #b8955e}
 #set .row .lb{flex:1; min-width:0}
 #set .row .lb small{display:block; color:var(--muted); font-size:.8em; line-height:1.4}
 #set .ctl{display:flex; gap:.35em; align-items:center; flex-wrap:wrap; justify-content:flex-end}
@@ -115,6 +140,7 @@ button:focus-visible{outline:3px solid var(--teal); outline-offset:2px}
   <div id="title" hidden><button class="pbtn" id="tcont" type="button" hidden>이어하기</button><button class="pbtn" id="tnew" type="button">새로 시작</button><button class="pbtn" id="tset" type="button">설정</button><button class="pbtn" id="tinfo" type="button">정보</button><div class="tf" id="tfoot"></div></div>
   <div id="guide" hidden><div class="bx"></div><div class="gh" id="gh"></div><div class="gb" id="gb"></div><div class="gf"><span id="gp"></span><span><button class="pbtn" id="gskip" type="button">건너뛰기</button> <button class="pbtn" id="gnext" type="button">다음</button></span></div></div>
   <div id="boot"><span class="em" style="left:8%;animation-delay:0.0s;animation-duration:7.0s;--dx:24px"></span><span class="em" style="left:18%;animation-delay:2.4s;animation-duration:8.0s;--dx:-16px"></span><span class="em" style="left:29%;animation-delay:4.6s;animation-duration:6.5s;--dx:30px"></span><span class="em" style="left:41%;animation-delay:1.2s;animation-duration:9.0s;--dx:-22px"></span><span class="em" style="left:52%;animation-delay:5.5s;animation-duration:7.5s;--dx:18px"></span><span class="em" style="left:63%;animation-delay:3.1s;animation-duration:8.5s;--dx:-30px"></span><span class="em" style="left:74%;animation-delay:0.7s;animation-duration:6.8s;--dx:26px"></span><span class="em" style="left:84%;animation-delay:4.0s;animation-duration:9.0s;--dx:-18px"></span><span class="em" style="left:92%;animation-delay:2.0s;animation-duration:7.2s;--dx:14px"></span><span class="em" style="left:35%;animation-delay:6.3s;animation-duration:8.0s;--dx:-26px"></span><span class="em" style="left:58%;animation-delay:6.9s;animation-duration:6.6s;--dx:22px"></span><span class="em" style="left:12%;animation-delay:5.2s;animation-duration:7.8s;--dx:-12px"></span><div class="bs">AUTUMN TERM</div><div class="bn">아델라인 빌리지<small>ADELINE VILLAGE</small></div><div class="bl"><i></i>✦<i></i></div><div class="bbar"><i id="bbar"></i></div><div class="bp" id="bp">불러오는 중…</div></div>
+  <button class="pbtn" id="mquit" type="button" hidden>그만두기</button>
   <button class="pbtn" id="cskip" type="button" hidden>건너뛰기 ▶▶</button>
   <div id="set" hidden><div class="bx"></div><div class="sh"><b>설정</b><button class="pbtn" id="setx" type="button">닫기</button></div><div class="tabs" id="settabs"></div><div class="body" id="setbody"></div><div class="ft">Esc 로도 닫을 수 있어요</div></div>
   <div id="dlg" hidden><img id="pt" alt="" hidden><div class="bx"></div><div class="nm" hidden></div><div class="tx"></div><div class="ch"></div><div class="nx">▼</div></div>
