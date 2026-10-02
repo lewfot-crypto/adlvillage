@@ -35,25 +35,33 @@ for k,f in src.items():
         edge=cv2.dilate(bad.astype(np.uint8),np.ones((3,3),np.uint8))-cv2.erode(bad.astype(np.uint8),np.ones((3,3),np.uint8))
         bl=cv2.GaussianBlur(a,(3,3),0);a[edge>0]=bl[edge>0]
     Image.fromarray(a).save(D+f"{k}_bg.png",optimize=True)
-    Image.fromarray(a).save(TMP+f"{k}_bg.jpg",quality=88)
+    Image.fromarray(a).save(TMP+f"{k}_bg.png")
 def b64(p,m): return "data:%s;base64,%s"%(m,base64.b64encode(open(p,"rb").read()).decode())
+# 용량 줄이기: 배경은 WebP 92(눈으로 구별 안 되는 수준), 투명 그림(PNG)은 무손실 WebP(픽셀 그대로)
+def wb(p,lossless=False):
+    im=Image.open(p);im=im.convert("RGBA" if lossless else "RGB");b=io.BytesIO()
+    if lossless: im.save(b,"WEBP",lossless=True,quality=100,method=6)
+    else: im.save(b,"WEBP",quality=92,method=6)
+    raw=open(p,"rb").read()
+    if lossless and len(b.getvalue())>=len(raw): return b64(p,"image/png")
+    return "data:image/webp;base64,"+base64.b64encode(b.getvalue()).decode()
 def pj(n):
     im=Image.open(D+f"portrait_{n}_cut.png" if n!="amelia" else D+"portrait_amelia.png").convert("RGBA")
     if n=="bran":
         im=im.crop((30,30,360,402)); im=im.resize((190,214),Image.LANCZOS)
     elif n in("orga","amelia"): im=im.resize((190,240),Image.LANCZOS)
-    b=io.BytesIO(); im.save(b,"PNG",optimize=True); return "data:image/png;base64,"+base64.b64encode(b.getvalue()).decode()
-Image.open(D+"attic_bg.png").convert("RGB").save(TMP+"attic_bg.jpg",quality=88)
-assets={"bg_attic":b64(TMP+"attic_bg.jpg","image/jpeg")}
-for k in src: assets["bg_"+k]=b64(TMP+f"{k}_bg.jpg","image/jpeg")
-for k in ["plaza","shop"]: assets["bg_"+k]=b64(D+f"{k}_bg.jpg","image/jpeg")
-for k,f in [("down","amelia2_down"),("up","amelia2_up"),("left","amelia2_left"),("right","amelia2_right")]: assets[k]=b64(D+f+".png","image/png")
-assets["attic_wmask"]=b64(D+"attic_window_mask.png","image/png")
-for n in ["orga","bran","master","alesendo","sina","wella","magiccat","owl"]: assets["npc_"+n]=b64(D+"npc_"+n+".png","image/png")
+    b=io.BytesIO(); im.save(b,"WEBP",lossless=True,quality=100,method=6); return "data:image/webp;base64,"+base64.b64encode(b.getvalue()).decode()
+assets={"bg_attic":wb(D+"attic_bg.png")}
+for k in src: assets["bg_"+k]=wb(TMP+f"{k}_bg.png")
+for k in ["plaza","shop"]: assets["bg_"+k]=wb(D+f"{k}_bg.jpg")
+for k,f in [("down","amelia2_down"),("up","amelia2_up"),("left","amelia2_left"),("right","amelia2_right")]: assets[k]=wb(D+f+".png",True)
+assets["attic_wmask"]=wb(D+"attic_window_mask.png",True)
+for n in ["orga","bran","master","alesendo","sina","wella","magiccat","owl"]: assets["npc_"+n]=wb(D+"npc_"+n+".png",True)
 import os
-if os.path.exists(D+"title_bg.jpg"): assets["title_bg"]=b64(D+"title_bg.jpg","image/jpeg")
-if os.path.exists(D+"title_logo.png"): assets["title_logo"]=b64(D+"title_logo.png","image/png")
-assets["door_inn1"]=b64(D+"door_inn1_open2.png","image/png")
+if os.path.exists(D+"title_bg.jpg"): assets["title_bg"]=wb(D+"title_bg.jpg")
+# 로고는 코드로 그린 도트 로고를 쓴다. 사용자가 로고 그림을 주면 assets/title_logo_final.png 로 넣으면 그걸 씀 (예전 임시 title_logo.png 는 안 씀)
+if os.path.exists(D+"title_logo_final.png"): assets["title_logo"]=wb(D+"title_logo_final.png",True)
+assets["door_inn1"]=wb(D+"door_inn1_open2.png",True)
 for n in ["orga","bran","amelia","master","wella","alesendo"]: assets["p_"+n]=pj(n)
 S=BASE+"/src/"
 head=open(S+"head.html").read(); script=open(S+"script.html").read()
@@ -73,7 +81,7 @@ buf=io.BytesIO(); f.flavor="woff2"; f.save(buf)
 ff="@font-face{font-family:'Galmuri11';src:url(data:font/woff2;base64,%s) format('woff2');font-display:block}"%base64.b64encode(buf.getvalue()).decode()
 print("font KB",len(buf.getvalue())//1024)
 full=full.replace("/*FONT*/",ff)
-ui=":root{"+"".join("--ui-%s:url(%s);"%(n.replace('_','-'),b64(D+"ui/"+n+".png","image/png")) for n in ["frame_parch","frame_dark","plate","plate_sel","plate_gold","tex_parch"])+"}"
+ui=":root{"+"".join("--ui-%s:url(%s);"%(n.replace('_','-'),b64(D+"ui/"+n+".png","image/png")) for n in ["frame_parch","frame_dark","plate","plate_sel","plate_gold","tex_parch","btn_title","btn_title_on"])+"}"
 full=full.replace("/*UI*/",ui)
 open(BASE+("/game_dbg.html" if dbg else "/game.html"),"w").write(full)
 print(len(full)/1e6,"MB")

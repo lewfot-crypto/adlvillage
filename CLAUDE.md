@@ -21,7 +21,7 @@ assets/ui/         UI 도트 틀(tools/make_ui.py 가 생성: 나무 틀·양피
 assets/            그림 파일 (스프라이트 240x330 RGBA, 배경 1116x2000, 초상화 등). *_orig/_src/_old 는 백업
 source_images/     원본 업로드 이미지 (tavern/school/inn1 배경 원본)
 fonts/             Galmuri11.ttf (빌드 시 글자만 잘라 woff2로 내장)
-build.py           src + assets 를 base64로 합쳐 game.html 생성
+build.py           src + assets 를 base64(WebP)로 합쳐 game.html 생성
 tools/             테스트 봇(playtest_*.py), 과거 1회성 가공 스크립트(patch_attic.py, unify_npcs.py)
 game.html          빌드 결과 (배포 파일)
 game_dbg.html      디버그 빌드 (window.__g 훅 포함, 테스트 전용, git 제외)
@@ -72,9 +72,9 @@ python3 tools/playtest_late.py [스크린샷폴더]  # 5~10일차: 마법서 5�
 - v0.43: 이야기 2편 「시나의 잃어버린 방울」(퀘스트 id `bell`). 사라진 가을 불빛을 끝낸 **다음 날**부터(S.lightsDay) 광장 시나에게 말 걸면 시작 → 오르가·브란 단서(S.bl) → 광장 분수(단풍나무) 앞에서 바람결 미니게임 → 웰라 빗자루에 엉킨 은방울(silverbell) → 시나에게 돌려주기(40G). `tools/playtest_late.py` 에 포함.
 - 설정(왼쪽 위 메뉴) → 테스트 탭에 '미니게임 바로 해 보기'(devMini, 마법 6종, 진행·숙련도 영향 없음). 타이틀에서 누르면 바로 시작 후 타이틀로 복귀, 게임 중에는 devMiniQ 로 걸어 다닐 수 있을 때 시작. 끝나거나 그만두면 devMiniBack 으로 테스트 탭 복귀. 연습(practice) 미니게임은 '그만두기' 버튼 #mquit / Esc 로 중단 가능(보상 없음, M.onQuit), 수업(lesson) 미니게임은 중단 불가. 릴리스 전 테스트 탭 숨길 때 같이 숨김.
 - v0.44: 미니게임·UI 도트 개편(사용자 선택: 나무+양피지 마법책 스타일). 미니게임은 drawMini 가 1/6 크기 캔버스(MGW 186x334)에 그린 뒤 픽셀 그대로 6배 확대 + 4단계 디더링(mgPosterize), 글자는 큰 화면에 따로 씀(fx.fillText 를 모아 둠). 효과는 책 페이지 안으로 잘림. 펼친 책 판은 mgDrawBook. 미니게임 소품은 PXA 도구(도트 칸 좌표, 가운데 AX93·AY170)로 직접 찍음: runeTablet(룬 석판, RUNE_GLYPH), runeCircle(마법진), 촛대·수정구·종·물방울·해달 메달은 각 MINI.*.draw 안. UI 는 head.html 의 .bx/.pbtn/.nm/#pt 가 border-image(9조각)+image-rendering:pixelated, 도트 크기 --px 는 resize() 에서 화면 폭/186(최소 2px). 대화창·설정·안내 창 안은 양피지라 --ink 등 글자색 변수를 짙은 색으로 덮어씀.
-- v0.45: 이야기 3편 「브란의 가을 수프 대회」(퀘스트 id `soup`). 2편을 끝낸 **다음 날**부터(S.bellDay) 선술집 브란 메뉴 첫 줄로 시작 → 재료 3개(상점 herb, 웰라 redleaf, 마법스승 moonshroom) → 브란에게 건네고 불꽃 미니게임(cook) → 저녁(phase 2)에 브란에게 말 걸면 대회(judge), 보상 수프 2·50G, S.autumnSoup. 선택지 버튼은 나타난 뒤 0.3초 안의 클릭 무시(chShownT) — 봇도 선택지 클릭 전 0.35초 기다림.
+- v0.45: 이야기 3편 「브란의 가을 수프 대회」(퀘스트 id `soup`). 2편을 끝낸 **다음 날**부터(S.bellDay) 선술집 브란 메뉴 첫 줄로 시작 → 재료 3개(상점 herb, 웰라 redleaf, 마법스승 moonshroom) → 브란에게 건네고 불꽃 미니게임(cook) → 저녁(phase 2)에 브란에게 말 걸면 대회(judge), 보상 수프 2·50G, S.autumnSoup. 선택지 버튼은 나타난 뒤 0.3초 안의 클릭 무시(chShownT) — 봇도 선택지 클릭 전 0.35초 기다림. 시작 화면 로고는 코드로 그린 도트 로고(drawPixLogo/pixText: Galmuri 22px 글자를 칸 단위로 금빛 띠·외곽선 칠해 8배 확대, '빌리지' 빨간 리본, '마법학교 이야기'), 타이틀 버튼은 assets/ui/btn_title(_on).png. build.py 가 그림을 WebP 로 내장(배경 손실 92, 투명 그림 무손실) → game.html 약 3.9MB.
 - 완료된 최근 수정: 계단 오를 땐 왼쪽·내려갈 땐 오른쪽을 봄, 알레센도 초상화 배경 제거, 상점 NPC 카운터 겹침 수정, 첫 실행(터치 대기) 화면 꾸밈.
-- 임시 이미지(그림 생기면 교체): 시작 화면 배경 title_bg.jpg / 로고 title_logo.png, 다락방 배경(attic_bg), 마법스승 웃는 초상화, 올빼미.
+- 임시 이미지(그림 생기면 교체): 시작 화면 배경 title_bg.jpg / 로고(지금은 코드 도트 로고, 그림을 받으면 assets/title_logo_final.png 로 넣으면 자동 사용. 예전 title_logo.png 는 안 씀), 다락방 배경(attic_bg), 마법스승 웃는 초상화, 올빼미.
 
 ## 다음 할 일 (우선순위)
 1. 이야기 1편·마법서 미니게임 손맛 확인(봇은 성공 처리만 함, 사람이 직접 해 봐야 함). 약초 부탁의 상점 구매 화면은 봇이 건너뜀.

@@ -69,6 +69,16 @@ plate([(WH,WS),(W,WD),(W,W)],W).save(OUT+'/plate.png')
 plate([(GH,GD),(WD,WS),(c('8f5c33'),c('8f5c33'))],c('8f5c33')).save(OUT+'/plate_sel.png')
 plate([(GH,GD),(WS,WS),(DARK,DARK)],DARK).save(OUT+'/plate_gold.png')
 
+def title_btn(center,inner):
+    lay=[(O,O),(GH,GD),(G,GD),(O,O),(WS,WS)]
+    im=ring_frame(16,lay,center);px=im.load()
+    for k in range(5,11):px[k,5]=inner;px[k,10]=c('1e120b')
+    round_corners(im,2)
+    for X,Y in [(2,2),(13,2),(2,13),(13,13)]:px[X,Y]=c('fff6d0')
+    return im
+title_btn(c('3a2414'),c('5a3a24')).save(OUT+'/btn_title.png')
+title_btn(c('5a3420'),c('7a4f2f')).save(OUT+'/btn_title_on.png')
+
 random.seed(7)
 tex=Image.new('RGBA',(32,32),P);px=tex.load()
 for y in range(32):

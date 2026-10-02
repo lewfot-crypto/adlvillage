@@ -3,10 +3,9 @@
 /*FONT*/
 /*UI*/
 :root{
-  --bg:#0b0813; --panel:#2b1c14; --gold:#f2b24c; --deep:#1b110b; --edge2:#8a5a30;
-  --ink:#f6ead2; --muted:#b9a88a; --teal:#3fb8b0; --wood:#5a3a24;
+  --gold:#f2b24c; --edge2:#8a5a30;
+  --ink:#f6ead2; --muted:#b9a88a; --teal:#3fb8b0;
   --font:'Galmuri11','Gowun Dodum','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
-  --notch:polygon(0 6px,6px 6px,6px 0,calc(100% - 6px) 0,calc(100% - 6px) 6px,100% 6px,100% calc(100% - 6px),calc(100% - 6px) calc(100% - 6px),calc(100% - 6px) 100%,6px 100%,6px calc(100% - 6px),0 calc(100% - 6px));
   color-scheme:dark; --px:3px; --fw:calc(var(--px)*8);
 }
 html,body{height:100%;margin:0}
@@ -79,7 +78,13 @@ body{
 @keyframes blink{50%{opacity:.35}}
 #title{position:absolute; inset:0; z-index:5; display:flex; flex-direction:column; justify-content:flex-end; align-items:center; padding:0 0 9%; gap:10px; pointer-events:none}
 #title[hidden]{display:none}
-#title button{pointer-events:auto; min-width:11em; padding:.55em 1em}
+#title button{pointer-events:auto; min-width:11.5em; padding:calc(.5em - var(--px)*3) 1em; font-size:1.05em; letter-spacing:.12em; color:#ffe9b8;
+  border-width:calc(var(--px)*6); border-image:var(--ui-btn-title) 6 fill / calc(var(--px)*6) stretch; text-shadow:0 var(--px) 0 #1a0e07,0 0 .5em rgba(242,178,76,.25); filter:drop-shadow(0 var(--px) 0 rgba(0,0,0,.6))}
+#title button:hover,#title button:focus-visible{border-image-source:var(--ui-btn-title-on); color:#fff6d8; outline:none}
+#title button::before,#title button::after{content:''; position:absolute; top:50%; width:calc(var(--px)*3); height:calc(var(--px)*3); margin-top:calc(var(--px)*-1.5); background:#f2b24c; transform:rotate(45deg) scale(0); box-shadow:0 0 0 var(--px) #1a0e07; transition:transform .12s steps(2)}
+#title button::before{left:calc(var(--px)*-9)}
+#title button::after{right:calc(var(--px)*-9)}
+#title button:hover::before,#title button:hover::after,#title button:focus-visible::before,#title button:focus-visible::after{transform:rotate(45deg) scale(1)}
 #title .tf{pointer-events:none; color:var(--muted); font-size:.75em; text-align:center; margin-top:.6em; line-height:1.6; max-width:22em}
 #guide{position:absolute; inset:8% 6%; z-index:7; display:flex; flex-direction:column; padding:calc(var(--fw) + .5em) calc(var(--fw) + .6em); line-height:1.7; color:var(--ink)}
 #guide[hidden]{display:none}
