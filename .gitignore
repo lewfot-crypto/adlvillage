@@ -1,0 +1,6 @@
+# 테스트 전용 빌드와 봇 스크린샷
+game_dbg.html
+b[0-9].png
+sc_*.png
+__pycache__/
+.DS_Store
