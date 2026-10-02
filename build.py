@@ -59,8 +59,9 @@ assets["attic_wmask"]=wb(D+"attic_window_mask.png",True)
 for n in ["orga","bran","master","alesendo","sina","wella","magiccat","owl"]: assets["npc_"+n]=wb(D+"npc_"+n+".png",True)
 import os
 if os.path.exists(D+"title_bg.jpg"): assets["title_bg"]=wb(D+"title_bg.jpg")
-# 로고는 코드로 그린 도트 로고를 쓴다. 사용자가 로고 그림을 주면 assets/title_logo_final.png 로 넣으면 그걸 씀 (예전 임시 title_logo.png 는 안 씀)
-if os.path.exists(D+"title_logo_final.png"): assets["title_logo"]=wb(D+"title_logo_final.png",True)
+# 로고: 사용자가 준 assets/title_logo_final.png 가 있으면 그것, 없으면 title_logo.png (사용자가 v0.45 로고를 더 좋아함). 둘 다 없으면 코드 도트 로고(drawPixLogo)
+for f in ["title_logo_final.png","title_logo.png"]:
+    if os.path.exists(D+f): assets["title_logo"]=wb(D+f,True); break
 assets["door_inn1"]=wb(D+"door_inn1_open2.png",True)
 for n in ["orga","bran","amelia","master","wella","alesendo"]: assets["p_"+n]=pj(n)
 S=BASE+"/src/"
