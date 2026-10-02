@@ -217,7 +217,7 @@ function sfx(name,a){
    ===================================================================== */
 var VERSION='0.44 데모';
 var CHANGES=[
-  '0.44  미니게임 6종을 도트 그림으로 새로 그림(펼친 마법책 판 + 양피지 제목 띠 + 금빛 보석 진행 표시, 빛은 점묘로 번짐). 마법학교 느낌으로 소품도 새로: 룬이 새겨진 돌 석판(바람결), 놋쇠 촛대와 도는 마법진(불꽃), 받침 위 수정구(빛 모으기), 놋쇠 종(속삭임), 물방울과 푸른 수정(물결), 해·달 메달(그림자). 대화창·설정·일지·상점 창을 나무 틀 + 양피지 바탕으로, 버튼·이름표·초상화 틀·상단 버튼·알림 창도 도트 틀로 교체. 테스트 탭의 미니게임 \'해 보기\'가 타이틀 화면에서 아무 반응이 없던 문제 수정(이제 타이틀에서도 바로 시작, 알림이 설정 창 뒤에 가려지던 문제도 수정)',
+  '0.44  미니게임 6종을 도트 그림으로 새로 그림(펼친 마법책 판 + 양피지 제목 띠 + 금빛 보석 진행 표시, 빛은 점묘로 번짐). 마법학교 느낌으로 소품도 새로: 룬이 새겨진 돌 석판(바람결), 놋쇠 촛대와 도는 마법진(불꽃), 받침 위 수정구(빛 모으기), 놋쇠 종(속삭임), 물방울과 푸른 수정(물결), 해·달 메달(그림자). 대화창·설정·일지·상점 창을 나무 틀 + 양피지 바탕으로, 버튼·이름표·초상화 틀·상단 버튼·알림 창도 도트 틀로 교체. 테스트 탭의 미니게임 \'해 보기\'가 타이틀 화면에서 아무 반응이 없던 문제 수정(이제 타이틀에서도 바로 시작, 알림이 설정 창 뒤에 가려지던 문제도 수정). 연습 미니게임에 \'그만두기\' 버튼(Esc) 추가, 테스트 탭에서 한 미니게임은 끝나거나 그만두면 테스트 탭으로 돌아옴. 첫 화면 불러오기 바를 나무 틀 + 금빛 칸 막대로 교체',
   '0.43  이야기 2편 \'시나의 잃어버린 방울\' 추가(사라진 가을 불빛을 끝낸 다음 날부터, 광장의 시나 → 오르가·브란 단서 → 광장 단풍나무 앞에서 바람결 → 웰라의 빗자루 → 시나에게 돌려주기). 설정의 테스트 탭에 \'미니게임 바로 해 보기\' 버튼 6개 추가(기록에 남지 않음)',
   '0.42  홈 화면에 추가해 앱처럼 플레이할 수 있게 준비(아이콘·전체 화면·오프라인 실행). 알레센도 서 있는 그림을 예전 게임의 도트 그림으로 교체(옷 색 그대로, 아멜리아와 같은 귀여운 비율). 상점에서는 카운터 뒤에 허리까지 보이게 위치 조정',
   '0.41  5~10일차 직접 플레이 점검(마법서 5장·엔딩·부탁 3개 모두 통과). 분수를 누르면 분수 뒤 가로등 위에 서던 문제 수정(이제 분수 앞에 섬), 아직 할 일이 남았는데 아침마다 \'이야기의 다음 장은 준비 중\'이 나오던 문구 수정. 상점 벽의 \'404\' 네온 간판을 초승달·별 문양 나무 간판으로 교체(구석에 작게 404 새김, 카페 이름 설정은 그대로)',
@@ -655,12 +655,18 @@ var devMiniQ=null;
 function devMini(sp){
   var fromTitle=prevState==='title';
   closeSettings();
-  if(fromTitle){hideTitle();startMini(sp,'practice',function(){showToast('미니게임 끝',SPELLS[sp].name+' 연습',2200);showTitle()});return}
+  if(fromTitle){hideTitle();startMini(sp,'practice',function(){devMiniBack(true,'끝')});M.onQuit=function(){devMiniBack(true)};return}
   devMiniQ=sp;
+}
+/* 테스트 미니게임이 끝나거나 그만두면 설정의 테스트 탭으로 돌아간다 */
+function devMiniBack(toTitle,msg){
+  if(toTitle)showTitle();
+  curTab='테스트';openSettings(false);
+  if(msg)showToast('미니게임 '+msg,'다른 미니게임도 해 볼 수 있어요',2200);
 }
 function devMiniTick(){
   if(!devMiniQ||state!=='play')return;var sp=devMiniQ;devMiniQ=null;
-  startMini(sp,'practice',function(){showToast('미니게임 끝',SPELLS[sp].name+' 연습 (기록에는 남지 않아요)',2600)});
+  startMini(sp,'practice',function(){devMiniBack(false,'끝')});M.onQuit=function(){devMiniBack(false)};
 }
 function devTo(m,d){if(!S||!S.started){showToast('먼저 게임을 시작해 주세요','',2200);return}
   var n=0,c={y:S.cal.y,m:S.cal.m,d:S.cal.d};while(!(c.m===m&&c.d===d)&&n<400){c.d++;if(c.d>monthLen(c.y,c.m)){c.d=1;c.m++;if(c.m>12){c.m=1;c.y++}}n++}
@@ -2127,6 +2133,12 @@ function startMini(spell,mode,onDone){
   M={spell:spell,mode:mode,onDone:onDone,type:sp.mini,lv:Math.min(3,magicLv(spell)+(buffOn('tea')?1:0)),n:0,need:3,msg:'',mt:0,fin:0,ok:false};
   MINI[M.type].init(M);
 }
+/* 연습 미니게임 그만두기 (수업 미니게임은 제외) */
+function miniCanQuit(){return state==='mini'&&M&&M.mode!=='lesson'&&!M.fin}
+function miniQuit(){if(!miniCanQuit())return;var q=M.onQuit;M=null;state='play';sfx('select');if(q)q()}
+var mquitEl=document.getElementById('mquit');
+mquitEl.addEventListener('pointerdown',function(e){e.stopPropagation()});
+mquitEl.addEventListener('click',function(e){e.stopPropagation();miniQuit()});
 function miniDown(p){if(!M||M.fin)return;MINI[M.type].down(M,p)}
 function miniUp(){if(!M||M.fin)return;MINI[M.type].up(M)}
 function miniDir(d){if(!M||M.fin)return;if(MINI[M.type].dir)MINI[M.type].dir(M,d);else MINI[M.type].down(M,null)}
@@ -2493,7 +2505,7 @@ function startBoot(){
     bootBar.style.width=Math.round(d/n*100)+'%';
     if(d>=n&&!fin){fin=true;
       var go=function(e){window.removeEventListener('pointerdown',go,true);window.removeEventListener('keydown',go,true);audInit();bootEl.classList.add('off');showTitle()};
-      setTimeout(function(){bootP.textContent='화면을 터치하세요';bootP.classList.add('on');window.addEventListener('pointerdown',go,true);window.addEventListener('keydown',go,true)},250);return}
+      setTimeout(function(){bootP.textContent='화면을 터치하세요';bootP.classList.add('on');bootBar.parentNode.classList.add('full');window.addEventListener('pointerdown',go,true);window.addEventListener('keydown',go,true)},250);return}
     if(!fin)setTimeout(chk,80);
   }
   chk();
@@ -2560,7 +2572,7 @@ var KM={ArrowLeft:'left',KeyA:'left',ArrowRight:'right',KeyD:'right',ArrowUp:'up
 window.addEventListener('keydown',function(e){
   audInit();
   if(e.code==='KeyJ'&&(state==='play'||(state==='menu'&&jmode))){e.preventDefault();if(state==='menu')closeSettings();else openJournal();return}
-  if(e.code==='Escape'){e.preventDefault();if(state==='menu')closeSettings();else openSettings();return}
+  if(e.code==='Escape'){e.preventDefault();if(state==='mini'){miniQuit();return}if(state==='menu')closeSettings();else openSettings();return}
   if(state==='menu')return;
   if(state==='mini'&&KM[e.code]){e.preventDefault();if(!e.repeat)miniDir(KM[e.code]);return}
   if(state==='dialog'&&waitChoice&&KM[e.code]){
@@ -2624,7 +2636,7 @@ var last=performance.now();
 function loop(now){
   var dt=Math.min(0.05,(now-last)/1000);last=now;t=now;
   if(now-lastSync>1000){lastSync=now;if(state==='play')syncPhase()}
-  devMiniTick();
+  devMiniTick();mquitEl.hidden=!miniCanQuit();
   update(dt);
   render(state==='play'?findTarget():null);
   requestAnimationFrame(loop);
