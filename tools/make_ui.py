@@ -1,7 +1,7 @@
 """UI 도트 틀 생성: assets/ui/*.png (1배 크기 도트. 화면에서는 CSS --px 배로 픽셀 그대로 키움)
 - frame_parch / frame_dark : 대화창·설정창·알림용 나무 틀 (9조각, 조각 8칸)
 - plate / plate_sel / plate_gold : 버튼·이름표용 작은 판 (9조각, 조각 4칸)
-- tex_parch : 양피지 바탕 무늬 (32x32 반복)
+- tex_parch : 양피지 바탕 무늬 (64x64 반복)
 사용: python3 tools/make_ui.py"""
 from PIL import Image
 import random,os
@@ -79,13 +79,41 @@ def title_btn(center,inner):
 title_btn(c('3a2414'),c('5a3a24')).save(OUT+'/btn_title.png')
 title_btn(c('5a3420'),c('7a4f2f')).save(OUT+'/btn_title_on.png')
 
-random.seed(7)
-tex=Image.new('RGBA',(32,32),P);px=tex.load()
-for y in range(32):
-    for x in range(32):
-        r=random.random()
-        if r<.06:px[x,y]=PD
-        elif r<.075:px[x,y]=PE
-        elif r<.09:px[x,y]=c('f4e4bf')
+# ---- 양피지 바탕 64x64 (이어붙여도 티 안 나게 가장자리를 감싸서 만듦)
+# 옅은 큰 얼룩 3단계(바둑판 디더링으로 단계 연결) + 종이 섬유 결 + 잔점. 글자가 잘 읽히도록 명암 차이는 작게.
+import numpy as np
+random.seed(11);np.random.seed(11)
+N=64
+def tile_noise(cells):
+    g=np.random.rand(cells,cells)
+    big=np.zeros((N,N))
+    for y in range(N):
+        for x in range(N):
+            fx,fy=x*cells/N,y*cells/N;x0,y0=int(fx)%cells,int(fy)%cells;x1,y1=(x0+1)%cells,(y0+1)%cells;tx,ty=fx-int(fx),fy-int(fy)
+            tx=tx*tx*(3-2*tx);ty=ty*ty*(3-2*ty)
+            big[y,x]=(g[y0,x0]*(1-tx)+g[y0,x1]*tx)*(1-ty)+(g[y1,x0]*(1-tx)+g[y1,x1]*tx)*ty
+    return big
+low=tile_noise(4)*.65+tile_noise(8)*.35
+BAY=[[0,8,2,10],[12,4,14,6],[3,11,1,9],[15,7,13,5]]
+tones=[c('f3e4be'),c('eedcb2'),P,c('e5d09f'),c('dcc392')]   # 밝음 → 어두움
+tex=Image.new('RGBA',(N,N),P);px=tex.load()
+lo,hi=low.min(),low.max()
+for y in range(N):
+    for x in range(N):
+        v=(low[y,x]-lo)/(hi-lo)                      # 0~1
+        t=v*(len(tones)-1)*0.999
+        k=int(t);f=t-k;th=(BAY[y%4][x%4]+.5)/16
+        px[x,y]=tones[min(len(tones)-1,k+(1 if f>th else 0))]
+def put(x,y,col):px[x%N,y%N]=col
+FIB_D=c('dcc394');FIB_L=c('f4e8c8')
+for _ in range(58):                                    # 섬유 결: 짧은 선, 가로·세로·비스듬 섞음
+    x=random.randrange(N);y=random.randrange(N);ln=random.randint(2,6);col=FIB_D if random.random()<.6 else FIB_L
+    dx,dy=random.choice([(1,0),(1,0),(0,1),(1,1),(1,-1)])
+    for k in range(ln):put(x+k*dx,y+k*dy,col)
+for _ in range(26):                                    # 잔점
+    x=random.randrange(N);y=random.randrange(N);put(x,y,c('bf9a62') if random.random()<.6 else c('c9a76f'))
+for _ in range(5):                                     # 작은 얼룩 점
+    x=random.randrange(N);y=random.randrange(N);col=c('d3b27a')
+    put(x,y,col);put(x+1,y,col);put(x,y+1,col)
 tex.save(OUT+'/tex_parch.png')
 print('ui ->',os.path.abspath(OUT))

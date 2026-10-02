@@ -21,8 +21,10 @@ body{
   border-image:var(--ui-frame-dark) 8 fill / var(--fw) stretch; filter:drop-shadow(0 var(--px) 0 rgba(0,0,0,.45))}
 /* 양피지 틀: 대화창·설정·안내 */
 #dlg .bx,#set .bx,#guide .bx{border-image:var(--ui-frame-parch) 8 / var(--fw) stretch;
-  background:#ecd9ad var(--ui-tex-parch) repeat; background-size:calc(var(--px)*32); background-clip:padding-box; background-origin:padding-box}
-#dlg,#set,#guide{--ink:#3b2414; --muted:#7c5a38; --gold:#9a5410; --edge2:#a9844f}
+  background:#ecd9ad var(--ui-tex-parch) repeat; background-size:calc(var(--px)*64); background-clip:padding-box; background-origin:padding-box;
+  /* 오래된 종이 느낌: 안쪽 가장자리가 계단식으로 살짝 누렇게 그을림 */
+  box-shadow:inset 0 0 0 var(--px) rgba(168,120,64,.30), inset 0 0 0 calc(var(--px)*2) rgba(190,142,82,.16), inset 0 0 0 calc(var(--px)*3) rgba(205,160,98,.08)}
+#dlg,#set,#guide{--ink:#3b2414; --muted:#7c5a38; --gold:#9a5410; --edge2:#a9844f; -webkit-text-stroke:.45px currentColor; paint-order:stroke fill}
 #dlg{position:absolute; left:3%; right:3%; bottom:2.2%; line-height:1.6; padding:calc(var(--fw) + .55em) calc(var(--fw) + .7em) calc(var(--fw) + .35em); font-size:1em; cursor:pointer; color:var(--ink)}
 #dlg[hidden]{display:none}
 #dlg .nm:not([hidden]) ~ .tx{margin-top:.8em}
@@ -36,14 +38,14 @@ body{
 .pbtn.sel{border-image-source:var(--ui-plate-sel); color:#fff3d0}
 .pbtn.sel::after{content:'◀'; position:absolute; right:.35em; top:50%; transform:translateY(-50%) scale(.6); color:#ffe39a}
 .pbtn.sel{padding-right:1.5em}
-#pt{position:absolute; z-index:2; right:1em; bottom:calc(100% - var(--px)*2); width:8.6em; height:auto; image-rendering:auto; pointer-events:none; box-sizing:content-box;
+#pt{position:absolute; z-index:2; right:1em; bottom:calc(100% - var(--px)*2); width:calc(var(--fs0,15px)*8.6); height:auto; image-rendering:auto; pointer-events:none; box-sizing:content-box;
   border-style:solid; border-width:calc(var(--px)*4); border-image:var(--ui-plate-gold) 4 / calc(var(--px)*4) stretch;
   background:radial-gradient(ellipse at 50% 35%,#5a4060 0,#2e2236 55%,#1c1424 100%); background-clip:padding-box; filter:drop-shadow(0 var(--px) 0 rgba(0,0,0,.5))}
 #pt[hidden]{display:none}
 .ptf{position:absolute; left:.9em; bottom:calc(100% + .9em); width:6.4em; height:8em; pointer-events:none}
 @keyframes bl{50%{opacity:0}}
 /* 상단 알림 */
-#toast{position:absolute; z-index:6; top:2%; left:50%; transform:translate(-50%,-10px); max-width:88%; padding:calc(var(--fw) + .1em) calc(var(--fw) + .6em); line-height:1.5; text-align:center; color:var(--ink); font-size:.95em; opacity:0; transition:opacity .45s, transform .45s; pointer-events:none; white-space:nowrap}
+#toast{position:absolute; z-index:6; top:2%; left:50%; transform:translate(-50%,-10px); max-width:88%; padding:calc(var(--fw) + .1em) calc(var(--fw) + .6em); line-height:1.5; text-align:center; color:var(--ink); font-size:.95em; opacity:0; transition:opacity .45s, transform .45s; pointer-events:none; white-space:normal; width:max-content; word-break:keep-all}
 #toast.on{opacity:1; transform:translate(-50%,0)}
 #toast .tt{position:relative}
 #toast .tg{position:relative; color:var(--gold); font-size:.85em; display:block}
@@ -103,10 +105,10 @@ body{
 #set .sh b{font-size:1.15em; color:var(--gold); font-weight:normal; text-shadow:0 var(--px) 0 #f6e7c2}
 #set .tabs{position:relative; display:flex; gap:.4em; flex-wrap:wrap; margin-bottom:.7em}
 #set .body{position:relative; flex:1; word-break:keep-all; overflow-wrap:anywhere; overflow-y:auto; padding-right:.3em; scrollbar-width:thin; scrollbar-color:var(--edge2) transparent; touch-action:pan-y}
-#set .row{display:flex; align-items:center; justify-content:space-between; gap:.8em; padding:.5em 0; border-bottom:var(--px) dashed #b8955e}
-#set .row .lb{flex:1; min-width:0}
+#set .row{display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:.5em .8em; padding:.5em 0; border-bottom:var(--px) dashed #b8955e}
+#set .row .lb{flex:1 1 9em; min-width:0}
 #set .row .lb small{display:block; margin-top:.3em; color:var(--muted); font-size:.8em; line-height:1.75; letter-spacing:.04em}
-#set .ctl{display:flex; gap:.35em; align-items:center; flex-wrap:wrap; justify-content:flex-end}
+#set .ctl{display:flex; gap:.35em; align-items:center; flex-wrap:wrap; justify-content:flex-end; margin-left:auto}
 #set .note{color:var(--muted); font-size:.85em; padding:.5em 0; white-space:pre-wrap; line-height:1.75; letter-spacing:.03em}
 #set .logp{padding:.6em 0 .2em}
 #set .logp .lh{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:.4em; padding-bottom:.3em; border-bottom:var(--px) solid #b8955e}
