@@ -73,6 +73,8 @@ buf=io.BytesIO(); f.flavor="woff2"; f.save(buf)
 ff="@font-face{font-family:'Galmuri11';src:url(data:font/woff2;base64,%s) format('woff2');font-display:block}"%base64.b64encode(buf.getvalue()).decode()
 print("font KB",len(buf.getvalue())//1024)
 full=full.replace("/*FONT*/",ff)
+ui=":root{"+"".join("--ui-%s:url(%s);"%(n.replace('_','-'),b64(D+"ui/"+n+".png","image/png")) for n in ["frame_parch","frame_dark","plate","plate_sel","plate_gold","tex_parch"])+"}"
+full=full.replace("/*UI*/",ui)
 open(BASE+("/game_dbg.html" if dbg else "/game.html"),"w").write(full)
 print(len(full)/1e6,"MB")
 # 홈 화면 추가용(GitHub Pages): index.html + manifest.json + sw.js. game.html(Artifact·더블클릭용)은 그대로 둔다.

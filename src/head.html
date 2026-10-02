@@ -1,12 +1,13 @@
 <title>아델라인 빌리지</title>
 <style>
 /*FONT*/
+/*UI*/
 :root{
   --bg:#0b0813; --panel:#2b1c14; --gold:#f2b24c; --deep:#1b110b; --edge2:#8a5a30;
   --ink:#f6ead2; --muted:#b9a88a; --teal:#3fb8b0; --wood:#5a3a24;
   --font:'Galmuri11','Gowun Dodum','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
   --notch:polygon(0 6px,6px 6px,6px 0,calc(100% - 6px) 0,calc(100% - 6px) 6px,100% 6px,100% calc(100% - 6px),calc(100% - 6px) calc(100% - 6px),calc(100% - 6px) 100%,6px 100%,6px calc(100% - 6px),0 calc(100% - 6px));
-  color-scheme:dark;
+  color-scheme:dark; --px:3px; --fw:calc(var(--px)*8);
 }
 html,body{height:100%;margin:0}
 body{
@@ -14,29 +15,36 @@ body{
   display:flex; align-items:center; justify-content:center; overflow:hidden;
   -webkit-user-select:none; user-select:none; -webkit-touch-callout:none; touch-action:none;
 }
-.stage{position:relative; line-height:0; font-size:15px}
+.stage{position:relative; line-height:0; font-size:15px; --fw:calc(var(--px)*8)}
 #cv{image-rendering:pixelated; background:#000; display:block; touch-action:none}
 /* 도트 상자: 모서리가 계단처럼 깎인 틀 */
-.bx{position:absolute; inset:0; background:var(--panel); clip-path:var(--notch);
-  box-shadow:inset 0 0 0 3px var(--gold), inset 0 0 0 6px var(--panel), inset 0 0 0 8px var(--edge2); pointer-events:none}
-#dlg{position:absolute; left:3%; right:3%; bottom:2.2%; line-height:1.6; padding:1.1em 1.3em .95em; font-size:1em; cursor:pointer; color:var(--ink)}
+.bx{position:absolute; inset:0; pointer-events:none; image-rendering:pixelated; border-style:solid; border-width:var(--fw);
+  border-image:var(--ui-frame-dark) 8 fill / var(--fw) stretch; filter:drop-shadow(0 var(--px) 0 rgba(0,0,0,.45))}
+/* 양피지 틀: 대화창·설정·안내 */
+#dlg .bx,#set .bx,#guide .bx{border-image:var(--ui-frame-parch) 8 / var(--fw) stretch;
+  background:#ecd9ad var(--ui-tex-parch) repeat; background-size:calc(var(--px)*32); background-clip:padding-box; background-origin:padding-box}
+#dlg,#set,#guide{--ink:#3b2414; --muted:#7c5a38; --gold:#9a5410; --edge2:#a9844f}
+#dlg{position:absolute; left:3%; right:3%; bottom:2.2%; line-height:1.6; padding:calc(var(--fw) + .55em) calc(var(--fw) + .7em) calc(var(--fw) + .35em); font-size:1em; cursor:pointer; color:var(--ink)}
 #dlg[hidden]{display:none}
+#dlg .nm:not([hidden]) ~ .tx{margin-top:.8em}
 #dlg .tx{position:relative; min-height:3.2em; white-space:pre-wrap; word-break:keep-all}
-#dlg .nm{position:absolute; top:-1.05em; left:.9em; padding:.05em .8em; background:var(--gold); color:var(--deep); font-size:.85em; line-height:1.5; clip-path:var(--notch)}
-#dlg .nx{position:absolute; right:.8em; bottom:.35em; color:var(--gold); font-size:.8em; animation:bl .9s steps(2) infinite}
+#dlg .nm{position:absolute; top:calc(var(--fw)/2 - .6em - var(--px)*4); left:calc(var(--fw) + .3em); padding:var(--px) calc(var(--px)*2 + .5em); color:#ffe6a8; font-size:.85em; line-height:1.4; image-rendering:pixelated; border-style:solid; border-width:calc(var(--px)*3); border-image:var(--ui-plate-gold) 4 fill / calc(var(--px)*4) stretch; text-shadow:0 var(--px) 0 #1a0e07}
+#dlg .nx{position:absolute; right:calc(var(--fw) + .3em); bottom:calc(var(--fw) - .2em); color:var(--gold); font-size:.8em; animation:bl .9s steps(2) infinite}
 #dlg .ch{position:relative; display:flex; gap:.6em; flex-wrap:wrap; margin-top:.5em}
-.pbtn{position:relative; font:inherit; font-size:.95em; color:var(--ink); background:var(--wood); border:0; padding:.4em 1em; cursor:pointer; clip-path:var(--notch); box-shadow:none; line-height:1.4}
-.pbtn::before{content:''; position:absolute; inset:0; box-shadow:inset 0 0 0 2px var(--edge2); pointer-events:none}
-.pbtn.sel{background:#7a4f2f; color:#fff3d0}
-.pbtn.sel::before{box-shadow:inset 0 0 0 2px var(--gold)}
-.pbtn.sel::after{content:'◀'; position:absolute; right:.35em; top:50%; transform:translateY(-50%) scale(.6); color:var(--gold)}
+.pbtn{position:relative; font:inherit; font-size:.95em; color:#f6ead2; background:transparent; padding:calc(.4em - var(--px)*3) calc(1em - var(--px)*3); cursor:pointer; line-height:1.4; image-rendering:pixelated;
+  border-style:solid; border-width:calc(var(--px)*3); border-image:var(--ui-plate) 4 fill / calc(var(--px)*4) stretch; text-shadow:0 var(--px) 0 #2a1608}
+.pbtn:active{transform:translateY(var(--px))}
+.pbtn.sel{border-image-source:var(--ui-plate-sel); color:#fff3d0}
+.pbtn.sel::after{content:'◀'; position:absolute; right:.35em; top:50%; transform:translateY(-50%) scale(.6); color:#ffe39a}
 .pbtn.sel{padding-right:1.5em}
-#pt{position:absolute; right:1em; bottom:calc(100% - 5px); width:8.6em; height:auto; image-rendering:auto; filter:drop-shadow(0 3px 0 rgba(0,0,0,.55)); pointer-events:none}
+#pt{position:absolute; right:1em; bottom:calc(100% - var(--px)*2); width:8.6em; height:auto; image-rendering:auto; pointer-events:none; box-sizing:content-box;
+  border-style:solid; border-width:calc(var(--px)*4); border-image:var(--ui-plate-gold) 4 / calc(var(--px)*4) stretch;
+  background:radial-gradient(ellipse at 50% 35%,#5a4060 0,#2e2236 55%,#1c1424 100%); background-clip:padding-box; filter:drop-shadow(0 var(--px) 0 rgba(0,0,0,.5))}
 #pt[hidden]{display:none}
 .ptf{position:absolute; left:.9em; bottom:calc(100% + .9em); width:6.4em; height:8em; pointer-events:none}
 @keyframes bl{50%{opacity:0}}
 /* 상단 알림 */
-#toast{position:absolute; top:2%; left:50%; transform:translate(-50%,-10px); max-width:88%; padding:.55em 1.2em; line-height:1.5; text-align:center; color:var(--ink); font-size:.95em; opacity:0; transition:opacity .45s, transform .45s; pointer-events:none; white-space:nowrap}
+#toast{position:absolute; top:2%; left:50%; transform:translate(-50%,-10px); max-width:88%; padding:calc(var(--fw) + .1em) calc(var(--fw) + .6em); line-height:1.5; text-align:center; color:var(--ink); font-size:.95em; opacity:0; transition:opacity .45s, transform .45s; pointer-events:none; white-space:nowrap}
 #toast.on{opacity:1; transform:translate(-50%,0)}
 #toast .tt{position:relative}
 #toast .tg{position:relative; color:var(--gold); font-size:.85em; display:block}
@@ -64,24 +72,24 @@ body{
 #title[hidden]{display:none}
 #title button{pointer-events:auto; min-width:11em; padding:.55em 1em}
 #title .tf{pointer-events:none; color:var(--muted); font-size:.75em; text-align:center; margin-top:.6em; line-height:1.6; max-width:22em}
-#guide{position:absolute; inset:8% 6%; z-index:7; display:flex; flex-direction:column; padding:1.2em 1.3em; line-height:1.7; color:var(--ink)}
+#guide{position:absolute; inset:8% 6%; z-index:7; display:flex; flex-direction:column; padding:calc(var(--fw) + .5em) calc(var(--fw) + .6em); line-height:1.7; color:var(--ink)}
 #guide[hidden]{display:none}
 #guide .gh{position:relative; font-size:1.15em; color:var(--gold); margin-bottom:.6em}
 #guide .gb{position:relative; flex:1; overflow-y:auto; white-space:pre-wrap}
 #guide .gf{position:relative; display:flex; justify-content:space-between; align-items:center; margin-top:.8em; color:var(--muted); font-size:.85em}
 #cskip{position:absolute; right:3%; top:11%; z-index:4}
 .hbtn{position:absolute; top:1.6%; width:2.6em; height:2.6em; border:0; padding:0; background:transparent; cursor:pointer; line-height:1}
-.hbtn .bx{box-shadow:inset 0 0 0 2px var(--gold), inset 0 0 0 4px var(--panel)}
-.hbtn:hover .bx{background:#3b261b}
+.hbtn .bx{border-width:calc(var(--px)*4); border-image:var(--ui-plate-gold) 4 fill / calc(var(--px)*4) stretch}
+.hbtn:active{transform:translateY(var(--px))}
 #sbtn{left:3%}
 #sbtn i{position:absolute; left:50%; top:50%; width:1.1em; height:2px; margin-left:-.55em; background:var(--gold); box-shadow:0 -.38em 0 var(--gold), 0 .38em 0 var(--gold)}
-#set{position:absolute; inset:3.5% 4%; z-index:5; display:flex; flex-direction:column; padding:1.2em 1.3em 1em; line-height:1.55; color:var(--ink)}
+#set{position:absolute; inset:3.5% 4%; z-index:5; display:flex; flex-direction:column; padding:calc(var(--fw) + .5em) calc(var(--fw) + .6em) calc(var(--fw) + .3em); line-height:1.55; color:var(--ink)}
 #set[hidden]{display:none}
 #set .sh{position:relative; display:flex; align-items:center; justify-content:space-between; margin-bottom:.6em}
-#set .sh b{font-size:1.15em; color:var(--gold); font-weight:normal}
+#set .sh b{font-size:1.15em; color:var(--gold); font-weight:normal; text-shadow:0 var(--px) 0 #f6e7c2}
 #set .tabs{position:relative; display:flex; gap:.4em; flex-wrap:wrap; margin-bottom:.7em}
 #set .body{position:relative; flex:1; overflow-y:auto; padding-right:.3em; scrollbar-width:thin; scrollbar-color:var(--edge2) transparent; touch-action:pan-y}
-#set .row{display:flex; align-items:center; justify-content:space-between; gap:.8em; padding:.5em 0; border-bottom:2px dotted #4a3022}
+#set .row{display:flex; align-items:center; justify-content:space-between; gap:.8em; padding:.5em 0; border-bottom:var(--px) dashed #b8955e}
 #set .row .lb{flex:1; min-width:0}
 #set .row .lb small{display:block; color:var(--muted); font-size:.8em; line-height:1.4}
 #set .ctl{display:flex; gap:.35em; align-items:center; flex-wrap:wrap; justify-content:flex-end}
