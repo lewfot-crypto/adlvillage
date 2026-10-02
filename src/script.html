@@ -215,8 +215,9 @@ function sfx(name,a){
       def:기본값, min/max/step(range), options:[{v:값,l:글자}](select), apply:function(값){...}, run:function(){...}(button)}
    - 새 탭은 tab 이름만 새로 쓰면 생겨요.
    ===================================================================== */
-var VERSION='0.47 데모';
+var VERSION='0.48 데모';
 var CHANGES=[
+  '0.48  이야기 5편 "첫 등불의 약속" 추가(구름 소동 다음 날부터, 밤의 상점 올빼미가 맡아 둔 꾸러미 → 브란의 구석 자리 → 오르가의 가장 오래된 엽서 → 마법스승의 입학 명부를 빛 모으기로 읽기 → 꼬리표 뒷면 → 선술집 구석 자리에서 불꽃으로 낡은 등불 켜기). 마을 이름 "아델라인"의 유래가 밝혀짐. 선술집 구석 탁자에 등불이 계속 켜져 있음, 브란의 나무 숟가락',
   '0.47  마을 사람들 말투가 날짜에 맞게 조금씩 가까워짐(1~3일차는 처음 본 손님처럼, 4~7일차는 얼굴 익힌 사이, 8일차부터 지금처럼 다정하게). 속 깊은 이야기(브란의 수프 비밀·나무 숟가락, 시나의 지붕 위 등불 등)는 친해진 뒤에 들려줌. 첫 화면 불러오기 바를 도트 그라데이션(왼쪽 짙은 주황→오른쪽 금빛, 바둑판 무늬로 단계 연결)으로, 위쪽 "AUTUMN TERM" 글자 삭제, 시작 화면 제목을 예전 로고로 되돌림. 설정 정보 탭에서 버전별 바뀐 내용을 한 장씩 넘겨 보기. 알레센도 초상화 목 부분(옷깃이 목에 붙어 보이던 것) 정리, 대화 초상화 틀 아래쪽이 가려지던 문제 수정. 광장 상점 앞 물약·나무 상자를 밟고 지나가지 않게 함. 광장 가로등 안에 도트 불꽃이 일렁임',
   '0.46  이야기 4편 \'웰라의 구름 소동\' 추가(수프 대회 다음 날부터, 광장 웰라 → 상점에서 방법 묻기 → 분수 앞 바람결로 구름 모으기 → 물결로 빗물 내려보내기 → 무지개와 시나의 "여덟 번째다냥"). 광장에 도트 구름·비·무지개. 마을 이야기 27편 → 46편. 날짜별 소소한 일 9가지(가을비·안개·보름달·추분·첫서리·바람 부는 날·시월의 마지막 날 등): 아침 문구와 그날 처음 말 걸면 듣는 한마디, 비 오는 날은 광장에 비',
   '0.45  이야기 3편 \'브란의 가을 수프 대회\' 추가(시나의 방울을 찾은 다음 날부터, 선술집 브란 → 약초·웰라의 단풍잎·스승님의 달빛 버섯 → 불꽃으로 불 맞추기 → 저녁 수프 대회). 첫 화면 불러오기 바를 금빛 그라데이션으로. 선택지가 막 나타난 순간의 터치는 무시(빨리 넘기다 잘못 고르는 일 방지). 시작 화면 로고를 금빛 도트 글자 + 빨간 리본 \'빌리지\'로, 버튼을 금테 나무 명판으로. 그림을 WebP로 바꿔 파일 크기 약 6MB → 3.9MB(화질 거의 그대로), 안 쓰는 옛 코드 정리',
@@ -411,6 +412,8 @@ SC.tavern={place:'선술집',bg:'bg_tavern',npcs:[{img:'npc_bran',x:560,behind:0
     {id:'tableBL',x:100,y:1600,w:210,h:215},{id:'tableBR',x:805,y:1600,w:215,h:215},
   ],
   fg:[{x:95,y:435,w:930,h:180,base:615},{x:815,y:790,w:205,h:260,base:1040},{x:250,y:1295,w:205,h:210,base:1495},{x:315,y:1515,w:90,h:100,base:1610},{x:100,y:1600,w:210,h:215,base:1800},{x:805,y:1600,w:215,h:215,base:1800}],
+  pre:function(){if(S.promiseLamp)tavernLamp()},
+  post:function(){if(S.promiseLamp&&py+HH<1790&&px+HW-8>805&&px+8<1020)tavernLamp()},
   exit:{x:450,y:1830,w:215,h:65,near:{x:440,y:1560,w:240,h:340},door:{band:{x:445,y:1695,w:230,h:310,path:'M449,2000L449,1712Q449,1702 459,1702L657,1702Q667,1702 667,1712L667,2000Z M477,1996L477,1754L640,1754L640,1996Z'},innerPath:'M477,1996L477,1754L640,1754L640,1996Z',frame:[{x:450,y:1755,w:28,h:245},{x:640,y:1755,w:28,h:245}],y0:1752,y1:1998,max:1.25,leaves:[{x0:478,x1:640,hinge:478}]}}};
 
 SC.school={place:'학교 교실',bg:'bg_school',npcs:[{img:'npc_master',x:555,behind:0,dy:60}],vig:[558,1000,550,1300,0.28],
@@ -506,7 +509,14 @@ var QUESTS={
     ask:'상점에서 구름 치우는 법 물어보기',
     gather:'광장 분수 앞에서 바람결로 구름 모으기',
     rain:'광장 분수 앞에서 물결로 빗물 내려보내기',
-    wella:'광장의 웰라에게 가 보기'}}
+    wella:'광장의 웰라에게 가 보기'}},
+  promise:{title:'첫 등불의 약속',order:['visit','seat','cards','record','back','light'],steps:{
+    visit:'밤에 마법 상점의 올빼미 찾아가기',
+    seat:'선술집 브란에게 늘 비워 두는 구석 자리에 대해 묻기',
+    cards:'여관 오르가에게 가장 오래된 엽서 보여 달라고 하기',
+    record:'학교 마법스승께 첫 입학생 기록 여쭤보기',
+    back:'밤에 올빼미에게 꾸러미 주인의 이름 전하기',
+    light:'선술집 구석 자리에서 낡은 등불에 불 붙이기'}}
 };
 var ITEMS={
   key:{n:'다락방 열쇠',d:'오르가 아주머니에게 받은 열쇠. 손잡이에 작은 별이 새겨져 있다.',keep:1},
@@ -516,6 +526,8 @@ var ITEMS={
   bookmark:{n:'단풍 책갈피',d:'웰라가 만들어 준 책갈피. 은은하게 가을 냄새가 난다.',sell:15},
   tea:{n:'별빛 차',d:'마시면 오늘 하루 마법 연습이 한결 쉬워져요. (연습 숙련도 효과 +1, 하루)',buy:12,sell:5,use:function(){S.buff.tea=S.day;showToast('별빛 차','오늘은 마법 연습이 쉬워져요',3000);sfx('toast')}},
   herb:{n:'마법 약초',d:'향긋한 푸른 잎. 수프나 차에 넣으면 향이 좋아진다.',buy:8,sell:3},
+  oldlamp:{n:'낡은 놋쇠 등불',d:'아델라인이 맡겨 둔 작은 등불. 손잡이가 손때로 반질반질하다. 심지는 오래전에 꺼져 있다.',keep:1},
+  spoon:{n:'아멜리아의 나무 숟가락',d:'브란이 깎아 준 단골손님 숟가락. 손잡이에 "아멜리아"라고 새겨져 있다.',keep:1},
   rainbowdrop:{n:'무지개 물방울',d:'웰라가 분수에서 떠 온 물방울. 유리병 속에서 일곱 빛깔로 반짝인다.',keep:1},
   redleaf:{n:'제일 붉은 단풍잎',d:'웰라가 골라 준 단풍잎. 수프에 넣으면 가을 빛깔이 난다고 한다.',keep:1},
   moonshroom:{n:'달빛 버섯',d:'학교 뒤뜰 그늘에서 자란 버섯. 갓에 은은한 은빛이 돈다.',keep:1},
@@ -1579,9 +1591,92 @@ function cloudFinale(){
        {n:'시나',t:'…웰라가 포션 터뜨린 거다냥. …세고 싶어서 센 거 아니다냥.'},
        WL_('하하… 그래도 이번 건 예뻤죠? 아멜리아 님, 정말 고마워요.'),
        WL_('분수에서 무지개 물방울을 한 병 떠 왔어요. 이건 아멜리아 님 거예요!')],
-    {done:function(){S.cloudDone=true;giveItem('rainbowdrop');addXp('ripple');addGold(45,'웰라의 구름 소동');qDone('cloud')}});
+    {done:function(){S.cloudDone=true;S.cloudDay=S.day;giveItem('rainbowdrop');addXp('ripple');addGold(45,'웰라의 구름 소동');qDone('cloud')}});
 }
-/* 광장 구름·비·무지개 (도트) */
+/* ---------- 이야기 5편: 첫 등불의 약속 (구름 소동 다음 날부터, S.cloudDay) ----------
+   올빼미가 맡아 둔 꾸러미(받는 이 '아델라인') → 브란의 구석 자리 → 오르가의 가장 오래된 엽서 → 마법스승의 입학 명부(빛 모으기)
+   → 올빼미가 꼬리표 뒷면을 보여 주고 낡은 등불을 건넴 → 선술집 구석 자리에서 불꽃으로 등불을 켬. 아델라인 = 첫 입학생, 졸업 뒤 먼 곳으로 떠난 선배 */
+function promiseReady(){return !S.q.promise&&S.q.cloud&&S.q.cloud.st==='done'&&S.day>(S.cloudDay||0)}
+var OW_=function(t){return {n:'올빼미',t:t}},OR_=function(t){return {n:'오르가',p:'orga',t:t}},MS_=function(t){return {n:'마법스승',p:'master',t:t}},AL_=function(t){return {n:'알레센도',p:'alesendo',t:t}};
+function promiseAles(){
+  say([AL_('아, 아멜리아. 마침 잘 오셨어요.'),AL_('올빼미 선배님이 아멜리아께 보여 드릴 게 있다고 하셨어요. 밤에 가게로 와 달라고요.'),AL_('…선배님이 누구를 따로 부르시는 건 처음 봐요. 저도 조금 궁금하네요.')],
+    {done:function(){qStep('promise','visit');autoSave()}});
+}
+function promiseStart(){
+  S.metOwl=true;
+  say(['(올빼미가 카운터 아래에서 끈으로 묶인 작은 꾸러미를 꺼낸다. 포장지가 누렇게 바래 있다.)',
+    OW_('호오… 왔구먼. 이걸 보여 주고 싶었다네.'),
+    OW_('이 가게에 맡겨진 물건 가운데 가장 오래된 것이지. 주인이 올 때까지 돌려주지 않는다는 약속으로 맡았다네.'),
+    '(꼬리표에 빛바랜 글씨로 이름 하나가 적혀 있다.)','"아델라인"','…아델라인. 이 마을 이름과 같다.',
+    OW_('그런데 이 이름의 주인을 기억하는 이가 이제 마을에 없다네. …자네라면 찾아낼 수 있을 것 같았지. 호오…'),
+    OW_('선술집 브란이 늘 비워 두는 구석 자리가 있지. 그 자리를 처음 비워 둔 게 누구였는지, 거기서부터 물어보게.')],
+    {done:function(){qStep('promise','seat');autoSave()}});
+}
+function promiseBran(){
+  say([B_('…구석 자리요.'),B_('…제가 비워 두는 게 아니에요. 이 집 주인들이 대대로 비워 뒀어요. 저는 넘겨받았을 뿐이고요.'),
+    B_('…처음 주인이 남긴 말이 하나 있어요. "등불을 든 아이의 자리."'),
+    B_('…누구였는지는 몰라요. 다만 여관 오르가 아주머니 댁 벽에, 이 자리 이야기가 적힌 엽서가 있다고 들었어요.')],
+    {done:function(){qStep('promise','cards');autoSave()}});
+}
+function promiseOrga(){
+  say([OR_('선술집 구석 자리 엽서요? …아, 그거라면 알아요. 벽에서 제일 오래된 엽서예요.'),
+    '(오르가가 카운터 뒤 벽에서 귀퉁이가 닳은 엽서 한 장을 조심스럽게 떼어 온다.)',
+    '"선술집 구석 자리는 그대로인가요? 여기서도 저녁마다 광장 등불이 켜지는 게 보이는 것 같아요.\n언젠가 내 등불을 그 자리에서 다시 켜 줄 학생이 오기를. — A."',
+    OR_('우리 할머니의 할머니 때 온 엽서라는데, A가 누군지는 아무도 몰라요.'),
+    OR_('학생이라고 적혀 있으니… 학교 기록을 보면 알 수 있을지도 모르겠네요. 마법스승님께 여쭤보렴.')],
+    {done:function(){qStep('promise','record');autoSave()}});
+}
+function promiseMaster(){
+  say([MS_('…첫 입학생 기록 말이냐.'),MS_('서가 맨 아래 칸에 입학 명부가 있다. 첫 장은 잉크가 바래서 아무도 읽지 못했지.'),
+    MS_('빛 모으기를 배웠으니 해 봐라. 빛을 쌓으면 바랜 글씨도 다시 떠오른다.')],{done:function(){
+    startMini('glow','practice',function(){addXp('glow');
+      say(['(손끝에 모은 빛이 종이에 스며들자, 바랜 글씨가 한 줄씩 떠오른다.)','"첫 입학생 — 아델라인. 광장에 첫 등불을 밝힘."',
+        MS_('…아델라인. 그래, 그 이름이었구나.'),
+        MS_('이 마을에 처음 등불을 켠 학생이다. 마을 사람들은 고마운 마음에 그 아이 이름을 마을에 붙였다. 아델라인 빌리지라고.'),
+        MS_('명부에는 졸업한 뒤 먼 곳으로 떠났다고만 적혀 있다. …돌아왔다는 기록은 없다.'),
+        MS_('이름을 찾았으면 꾸러미를 맡은 이에게 가 봐라. 올빼미는 밤에만 깨어 있다.')],
+        {done:function(){qStep('promise','back');autoSave()}})})}});
+}
+function promiseOwl(){
+  say([OW_('호오… 그 얼굴을 보니 이름을 찾아온 모양이군.'),'(입학 명부에서 찾은 이름을 말했다. "아델라인. 이 마을에 첫 등불을 켠 첫 입학생이요.")',
+    OW_('그렇다네. 내가 처음 밤의 장부를 쓰던 해였지. 그 아이는 졸업하던 밤, 이 꾸러미를 맡기고 떠났다네.'),
+    OW_('그리고 한 가지를 더 부탁했지. 이름을 스스로 찾아온 학생이 있으면, 꼬리표 뒷면을 보여 주라고. 호오…'),
+    '(올빼미가 꼬리표를 뒤집는다. 같은 글씨로 한 줄이 더 적혀 있다.)',
+    '"내가 돌아오지 못하면, 이 등불을 다시 켤 학생에게."',
+    OW_('…오래 기다렸다네. 이제야 약속을 지키는군.'),
+    '(꾸러미를 풀자, 손때 묻은 작은 놋쇠 등불이 나온다. 심지는 오래전에 꺼진 채다.)',
+    OW_('불은 그 자리에서 붙이게. 선술집 구석 자리 말일세. 아델라인이 앉던 자리지. 호오…')],
+    {done:function(){giveItem('oldlamp');qStep('promise','light');autoSave()}});
+}
+function promiseLight(){
+  if(!npcHere('bran')){say(['구석 탁자 위에 촛불만 놓여 있다.','브란이 가게 문을 연 뒤에 등불을 켜자.']);return}
+  say(['(구석 탁자에 낡은 등불을 내려놓았다. 브란이 카운터에서 말없이 지켜본다.)','숨을 고르고, 첫 수업 때처럼 불꽃을 떠올려 보자.'],{done:function(){
+    startMini('flame','practice',function(){addXp('flame');takeItem('oldlamp');S.promiseLamp=true;
+      say(['(심지에 작은 불이 붙는다. 오래 잠들어 있던 등불이 천천히 눈을 뜨듯 밝아진다.)',
+        B_('…이 자리에 불이 켜진 건 처음 봐요.'),
+        B_('…앞으로도 이 자리는 비워 둘게요. 대신 저녁마다 이 등불은 제가 켤게요.'),
+        B_('…그리고, 이거.'),
+        '(브란이 앞치마 주머니에서 나무 숟가락 하나를 꺼낸다. 손잡이에 "아멜리아"라고 새겨져 있다.)',
+        B_('…다 깎았어요. 단골손님 숟가락이에요. 이 자리 옆에서 수프 먹을 때 써요.'),
+        '(등불 불빛이 창밖 광장의 가로등과 같은 색으로 흔들린다.)',
+        '(마을에 처음 등불을 켠 사람도, 먼 곳에서 이 불빛을 보고 있을 것만 같다.)'],
+        {done:function(){S.promiseDay=S.day;giveItem('spoon');addXp('glow');addGold(50,'첫 등불의 약속');qDone('promise')}})})}});
+}
+/* 선술집 구석 탁자(tableBR) 위 아델라인의 등불 (도트, 칸 4px). 불꽃은 칸 단위로 일렁임 */
+var LAMP_PX=['....####....','...#....#...','....####....','..########..','.#bBBBBBBb#.','.#g......g#.','.#g......g#.','.#g......g#.','.#g......g#.','.#g......g#.','.#g......g#.','.#bBBBBBBb#.','..########..','...##..##...'];
+function tavernLamp(){
+  var u=4,x0=952,y0=1680,i,j,c,k=Math.floor(t/120),n=function(a){var v=Math.sin(a*12.9898)*43758.5453;return v-Math.floor(v)},h=2+Math.floor(n(k)*2.5),sw=n(k+3)<.2?-1:(n(k+3)>.8?1:0);
+  var g=ctx.createRadialGradient(x0+18,y0+24,4,x0+18,y0+24,95);g.addColorStop(0,'rgba(255,196,110,'+(.32+.06*Math.sin(t/90))+')');g.addColorStop(1,'rgba(255,196,110,0)');
+  ctx.save();ctx.globalCompositeOperation='lighter';ctx.fillStyle=g;ctx.fillRect(x0-80,y0-70,200,190);ctx.restore();
+  var col={'#':'#1b110b','B':'#d9a548','b':'#9c6a24','g':'#8a5a20','.':null};
+  for(j=0;j<LAMP_PX.length;j++)for(i=0;i<12;i++){c=LAMP_PX[j][i];
+    if(j>=5&&j<=10&&i>=3&&i<=8)c='G';
+    var f=c==='G'?'#ffcf6a':col[c];if(!f)continue;ctx.fillStyle=f;ctx.fillRect(x0+i*u,y0+j*u,u,u)}
+  /* 불꽃 */
+  var fx=x0+5*u+sw*u,fb=y0+10*u;
+  ctx.fillStyle='#ff9a2a';ctx.fillRect(fx-u/2,fb-u*(h+1),u*3,u*(h+1));
+  ctx.fillStyle='#fff0b8';ctx.fillRect(fx,fb-u*h,u,u*h);
+}
 function pixCloud(cx,cy,sz){
   var g=8,blobs=[[0,0,1],[-.9,.25,.75],[.9,.2,.8],[-.4,-.45,.7],[.45,-.4,.65]],x,y,k,b,d;
   for(y=-sz;y<=sz*.8;y+=g)for(x=-sz*1.8;x<=sz*1.8;x+=g){
@@ -1645,6 +1740,7 @@ function lightsOrga(){
 function sayOrga(){
   S.metOrga=true;
   if(lightsOrga())return;
+  if(qActive('promise','cards')){promiseOrga();return}
   if(qActive('bell','clues')&&!(S.bl&&S.bl.orga)){say([{n:'오르가',p:'orga',t:'시나 방울 말이에요? 어제 새벽에 현관을 나설 땐 분명 딸랑딸랑 소리가 났어요.'},{n:'오르가',p:'orga',t:'그 애는 아침이면 꼭 광장부터 들르거든요. …광장 어딘가에 떨어뜨렸을지도 모르겠네요.'}],{done:function(){bellClue('orga')}});return}
   if(S.day>=2&&tellLore('orga'))return;
   if(S.day>=2){var ob=bond();say(ob===0?[{n:'오르가',p:'orga',t:'잘 쉬었어요? 다락방이 춥진 않았는지 모르겠네요.'},{n:'오르가',p:'orga',t:'광장은 문 나가면 바로예요. 학교는 그 위 계단이고요.'}]
@@ -1723,6 +1819,8 @@ function sayBran(){
       say([{n:'브란',p:'bran',t:'…방울이요. 어제 저녁에 문 닫을 때 들었어요. 광장 쪽에서요.'},{n:'브란',p:'bran',t:'…이상한 건, 바람이 불 때만 들렸다는 거예요. …바람에 물어보면 알려 줄지도요.'}],{done:function(){bellClue('bran')}})}});
     if(qActive('lights','clues')&&!(S.lt&&S.lt.bran))ch.unshift({label:'등불 이야기를 묻는다',run:function(){
       say([{n:'브란',p:'bran',t:'…등불 말이죠. 우리 집 난로도 불티가 자꾸 광장 쪽으로 날아가요.'},{n:'브란',p:'bran',t:'…누가 부르는 것처럼요. 방향은 상점 지붕 쪽이던데. …그쪽에 물어보는 게 빠르겠어요.'}],{done:function(){lightsClue('bran')}})}});
+    if(qActive('promise','seat'))ch.unshift({label:'구석 자리 이야기를 묻는다',run:promiseBran});
+    if(qActive('promise','light'))ch.unshift({label:'낡은 등불 이야기',run:function(){say([B_('…그 등불, 구석 탁자에 놓아 봐요.'),B_('…불은 아멜리아가 붙여요. 저는 보고 있을게요.')])}});
     if(festOn()&&!festF().cook)ch.unshift({label:'등불제 이야기를 듣는다',run:festBran});
     ch.push({label:'그만둔다'});
     say([{n:'브란',p:'bran',t:first?'…처음 보는 얼굴이네요. 앉아요.':['…뭘 드릴까요.','…또 왔네요. 뭘 드릴까요.','어서 와요, 아멜리아. 뭘 드릴까요.'][bond()]}],{choices:ch});
@@ -1997,6 +2095,7 @@ function magicSpot(key){
     case 'inn1.fire':return learned('whisper')||(B.got&&!bookHas(1)&&bookReady()&&S.phase>=2);
     case 'plaza.fountain':return qActive('bell','wind')||qActive('cloud','gather')||qActive('cloud','rain')||learned('ripple')||(B.got&&!bookHas(2)&&bookReady()&&S.phase===1&&learned('breeze')&&magicLv('breeze')>=2);
     case 'shop.counter':return bookP4ok();
+    case 'tavern.tableBR':return qActive('promise','light');
     case 'attic.window':return learned('breeze')||bookP5ok();
     case 'school.shelf':return learned('shadow')||(B.got&&B.key&&!bookHas(3)&&bookReady());
   }
@@ -2519,6 +2618,8 @@ function interact(o){
   if(key==='school.shelf'&&bookShelf())return;
   if(key==='shop.flower'&&qActive('lights','flower')&&learned('glow')){lightsFlower();return}
   if(key==='shop.flower'&&learned('glow')){askPractice('glow',['푸른 꽃이 보랏빛으로 은은하게 빛난다.','손끝에 모은 빛을 나눠 줘 볼까?']);return}
+  if(key==='tavern.tableBR'&&qActive('promise','light')){promiseLight();return}
+  if(key==='tavern.tableBR'&&S.promiseLamp){say(['구석 탁자 위에서 아델라인의 등불이 따뜻하게 타고 있다.','브란이 매일 저녁 불을 켜 두는 모양이다.']);return}
   if(TXT[key]){say([TXT[key]]);return}
   if(CN==='school'&&o.id==='sdesk0'){
     if(S.lesson===1){say(['책상 위의 초는 불이 꺼져 있다. 숨을 고르고 불꽃을 떠올려 보자.'],{done:function(){startMini('flame','lesson',function(){S.candleLit=true;S.magic=S.magic||{};S.magic.flame={lv:1,xp:0};finishLesson()})}});return}
@@ -2555,7 +2656,8 @@ function interact(o){
     break;
   case 'plaza.wella':sayWella();break;
   case 'plaza.sina':saySina();break;
-  case 'shop.counter':if(qActive('cloud','ask')&&(npcHere('owl')||npcHere('alesendo'))){cloudAsk(npcHere('owl'));break}if(qActive('lights','shop')&&(npcHere('owl')||npcHere('alesendo'))){lightsShop();break}if(bookP4ok()&&!npcHere('owl')&&npcHere('alesendo')){bookPage4();break}if(npcHere('owl'))sayOwl();else sayAlesendo();break;
+  case 'shop.counter':if(npcHere('owl')&&(promiseReady()||qActive('promise','visit'))){promiseStart();break}if(npcHere('owl')&&qActive('promise','back')){promiseOwl();break}if(promiseReady()&&npcHere('alesendo')){promiseAles();break}
+    if(qActive('cloud','ask')&&(npcHere('owl')||npcHere('alesendo'))){cloudAsk(npcHere('owl'));break}if(qActive('lights','shop')&&(npcHere('owl')||npcHere('alesendo'))){lightsShop();break}if(bookP4ok()&&!npcHere('owl')&&npcHere('alesendo')){bookPage4();break}if(npcHere('owl'))sayOwl();else sayAlesendo();break;
   case 'inn1.stairs':
     if(!S.key)say(['먼저 카운터의 오르가 아주머니께 인사부터 하자.']);
     else say(['삐걱거리는 나무 계단이 위층으로 이어진다.','다락방으로 올라갈까?'],{choices:[{label:'올라간다',run:function(){
@@ -2572,6 +2674,7 @@ function interact(o){
   /* 학교 */
   case 'school.teacher':
     if(masterBook())break;
+    if(qActive('promise','record')&&S.lesson===2){promiseMaster();break}
     if(qActive('soup','gather')&&!hasItem('moonshroom')&&S.lesson===2){say([{n:'마법스승',p:'master',t:'…달빛 버섯 말이냐. 뒤뜰 그늘에서 자란다. 브란이 부탁했겠지.'},{n:'마법스승',p:'master',t:'…그 사람 수프는 나도 안다. 가져가라. 대신, 맛이 어땠는지 나중에 말해 다오.'}],{done:function(){giveItem('moonshroom');autoSave()}});break}
     if(qActive('lights','clues')&&!(S.lt&&S.lt.master)&&S.lesson===2){say([{n:'마법스승',p:'master',t:'…등불 말이냐. 교실 초가 요 며칠 지붕 쪽으로 기운다. 바람 한 점 없는데도.'},{n:'마법스승',p:'master',t:'마법 상점의 첫 등불을 살펴보아라. …네가 다녀오면 답이 나올 것이다.'}],{done:function(){lightsClue('master')}});break}
     if(festOn()){festMaster();break}
@@ -2606,10 +2709,11 @@ function wake(){
     say([['새소리와 함께 눈을 떴다. 창밖으로 따뜻한 아침 햇살이 스며든다.','잠에서 깼다. 창밖으로 한낮의 햇살이 환하게 들어온다.','잠에서 깼다. 창밖으로 노을이 번지고 있다.','잠에서 깼다. 창밖은 달빛이 고요하다.'][S.phase],'입학 첫날이야. 1층에 내려가 인사하고, 광장으로 가 보자.'],{done:function(){qStep('main','morning');autoSave()}});
   }else{
     var nx=S.lesson<2?(!S.metWella?'wella':'school'):(pendingLesson()||(festOn()?festStep():'free'));
-    var left=S.day<8||!bookF().ended||['lights','herb','leaves','bell','soup','cloud'].some(function(k){return !S.q[k]||S.q[k].st!=='done'});
+    var left=S.day<8||!bookF().ended||['lights','herb','leaves','bell','soup','cloud','promise'].some(function(k){return !S.q[k]||S.q[k].st!=='done'});
     var nt=nx==='free'?['새로운 하루가 시작됐다.',left?'오늘은 마을을 마음껏 둘러보자.':'이야기의 다음 장은 아직 준비 중이에요. 마을을 마음껏 둘러보세요.']:['새로운 하루가 시작됐다.','오늘도 광장을 지나 학교로 가 보자.'];
     if(nx==='fest'||nx==='festwait'||nx==='festday')nt=festWake();
     else{var dv=dayEv();if(dv)nt=[nt[0]].concat(dv.wake,nt.slice(1))}
+    if(nx==='free'&&promiseReady()&&!S.prHint){S.prHint=1;nt=nt.concat(['꿈속에서 작은 등불 하나가 깜빡였다. …왠지 마법 상점이 떠오른다.'])}
     if(S.day===8)nt=nt.concat(['마을이 조금 익숙해졌다.','오늘부터는 마을 사람들의 부탁이 하나둘 들려오기 시작한다. 일지의 퀘스트 탭을 열어 보자.']);
     say(nt,{done:function(){qStep('main',nx);autoSave();bookMaybeIntro();bookEnding()}});
   }
