@@ -215,8 +215,9 @@ function sfx(name,a){
       def:기본값, min/max/step(range), options:[{v:값,l:글자}](select), apply:function(값){...}, run:function(){...}(button)}
    - 새 탭은 tab 이름만 새로 쓰면 생겨요.
    ===================================================================== */
-var VERSION='0.46 데모';
+var VERSION='0.47 데모';
 var CHANGES=[
+  '0.47  마을 사람들 말투가 날짜에 맞게 조금씩 가까워짐(1~3일차는 처음 본 손님처럼, 4~7일차는 얼굴 익힌 사이, 8일차부터 지금처럼 다정하게). 속 깊은 이야기(브란의 수프 비밀·나무 숟가락, 시나의 지붕 위 등불 등)는 친해진 뒤에 들려줌. 첫 화면 불러오기 바를 도트 그라데이션(왼쪽 짙은 주황→오른쪽 금빛, 바둑판 무늬로 단계 연결)으로, 위쪽 "AUTUMN TERM" 글자 삭제, 시작 화면 제목을 예전 로고로 되돌림. 설정 정보 탭에서 버전별 바뀐 내용을 한 장씩 넘겨 보기. 알레센도 초상화 목 부분(옷깃이 목에 붙어 보이던 것) 정리, 대화 초상화 틀 아래쪽이 가려지던 문제 수정. 광장 상점 앞 물약·나무 상자를 밟고 지나가지 않게 함. 광장 가로등 안에 도트 불꽃이 일렁임',
   '0.46  이야기 4편 \'웰라의 구름 소동\' 추가(수프 대회 다음 날부터, 광장 웰라 → 상점에서 방법 묻기 → 분수 앞 바람결로 구름 모으기 → 물결로 빗물 내려보내기 → 무지개와 시나의 "여덟 번째다냥"). 광장에 도트 구름·비·무지개. 마을 이야기 27편 → 46편. 날짜별 소소한 일 9가지(가을비·안개·보름달·추분·첫서리·바람 부는 날·시월의 마지막 날 등): 아침 문구와 그날 처음 말 걸면 듣는 한마디, 비 오는 날은 광장에 비',
   '0.45  이야기 3편 \'브란의 가을 수프 대회\' 추가(시나의 방울을 찾은 다음 날부터, 선술집 브란 → 약초·웰라의 단풍잎·스승님의 달빛 버섯 → 불꽃으로 불 맞추기 → 저녁 수프 대회). 첫 화면 불러오기 바를 금빛 그라데이션으로. 선택지가 막 나타난 순간의 터치는 무시(빨리 넘기다 잘못 고르는 일 방지). 시작 화면 로고를 금빛 도트 글자 + 빨간 리본 \'빌리지\'로, 버튼을 금테 나무 명판으로. 그림을 WebP로 바꿔 파일 크기 약 6MB → 3.9MB(화질 거의 그대로), 안 쓰는 옛 코드 정리',
   '0.44  미니게임 6종을 도트 그림으로 새로 그림(펼친 마법책 판 + 양피지 제목 띠 + 금빛 보석 진행 표시, 빛은 점묘로 번짐). 마법학교 느낌으로 소품도 새로: 룬이 새겨진 돌 석판(바람결), 놋쇠 촛대와 도는 마법진(불꽃), 받침 위 수정구(빛 모으기), 놋쇠 종(속삭임), 물방울과 푸른 수정(물결), 해·달 메달(그림자). 대화창·설정·일지·상점 창을 나무 틀 + 양피지 바탕으로, 버튼·이름표·초상화 틀·상단 버튼·알림 창도 도트 틀로 교체. 테스트 탭의 미니게임 \'해 보기\'가 타이틀 화면에서 아무 반응이 없던 문제 수정(이제 타이틀에서도 바로 시작, 알림이 설정 창 뒤에 가려지던 문제도 수정). 연습 미니게임에 \'그만두기\' 버튼(Esc) 추가, 테스트 탭에서 한 미니게임은 끝나거나 그만두면 테스트 탭으로 돌아옴. 첫 화면 불러오기 바를 나무 틀 + 금빛 칸 막대로 교체',
@@ -297,8 +298,25 @@ var SETTINGS=[
   {id:'devMini_ripple',tab:'테스트',type:'button',label:'물결 (마법서 2장)',btn:'해 보기',run:function(){devMini('ripple')}},
   {id:'devMini_shadow',tab:'테스트',type:'button',label:'그림자 (마법서 3장)',btn:'해 보기',run:function(){devMini('shadow')}},
   {id:'about',tab:'정보',type:'note',label:'아델라인 빌리지  v'+VERSION+'\n그림은 모두 직접 만든 도트예요.\n소리는 브라우저에서 바로 만들어 내요.'},
-  {id:'log',tab:'정보',type:'note',label:'바뀐 내용\n'+CHANGES.join('\n')}
+  {id:'log',tab:'정보',type:'log'}
 ];
+/* 업데이트 기록: 한 장에 한 버전. ◀ 이전 버전(옛날 쪽) / 다음 버전 ▶, 손가락으로 밀어도 넘어감 */
+var logPg=0;
+function renderLog(row){
+  var n=CHANGES.length;logPg=Math.max(0,Math.min(n-1,logPg));
+  var c=CHANGES[logPg],m=c.match(/^(\S+)\s+([\s\S]*)$/)||[0,'',c];
+  row.className='logp';
+  var hd=document.createElement('div');hd.className='lh';hd.innerHTML='<b></b><span></span>';hd.firstChild.textContent='바뀐 내용 · v'+m[1]+(logPg===0?' (지금)':'');hd.lastChild.textContent=(logPg+1)+' / '+n;
+  var bd=document.createElement('div');bd.className='lt';bd.textContent=m[2];
+  var nv=document.createElement('div');nv.className='ln';
+  var go=function(d){var k=logPg+d;if(k<0||k>=n)return;logPg=k;sfx('select');renderSettings()};
+  var b1=mkBtn('◀ 이전 버전',false,function(){go(1)}),b2=mkBtn('다음 버전 ▶',false,function(){go(-1)});
+  if(logPg>=n-1)b1.disabled=true;if(logPg<=0)b2.disabled=true;
+  nv.appendChild(b1);nv.appendChild(b2);
+  row.appendChild(hd);row.appendChild(bd);row.appendChild(nv);
+  var sx=null;bd.addEventListener('pointerdown',function(e){sx=e.clientX});
+  bd.addEventListener('pointerup',function(e){if(sx==null)return;var dx=e.clientX-sx;sx=null;if(Math.abs(dx)>40)go(dx<0?1:-1)});
+}
 function loadSettings(){
   var saved={};try{saved=JSON.parse(localStorage.getItem(SKEY)||'{}')||{}}catch(_){}
   SETTINGS.forEach(function(s){if(s.def!==undefined)SET[s.id]=(saved[s.id]!==undefined&&typeof saved[s.id]===typeof s.def)?saved[s.id]:s.def});
@@ -323,6 +341,7 @@ function renderSettings(){
   SETTINGS.filter(function(s){return s.tab===curTab}).forEach(function(s){
     var row=document.createElement('div');
     if(s.type==='note'){row.className='note';row.textContent=s.label;setBody.appendChild(row);return}
+    if(s.type==='log'){renderLog(row);setBody.appendChild(row);return}
     row.className='row';
     var lb=document.createElement('div');lb.className='lb';lb.textContent=s.label;
     if(s.hint){var sm=document.createElement('small');sm.textContent=s.hint;lb.appendChild(sm)}
@@ -430,10 +449,14 @@ SC.plaza={place:'아델라인 광장',bg:'bg_plaza',npcs:[{img:'npc_wella',x:520
     {x:325,y:690,w:50,h:80},{x:505,y:880,w:110,h:80},{x:415,y:960,w:290,h:235},{x:375,y:1130,w:45,h:70},{x:700,y:1130,w:45,h:70},
     {x:25,y:1470,w:60,h:70},{x:1035,y:1470,w:60,h:70},
     {x:345,y:1320,w:440,h:530},{x:250,y:1650,w:100,h:150},{x:300,y:1790,w:60,h:70},{x:755,y:1740,w:100,h:170},
-    {x:25,y:1780,w:130,h:200},{x:905,y:1830,w:211,h:170}],
+    {x:25,y:1780,w:130,h:200},{x:905,y:1830,w:211,h:170},
+    {x:378,y:1878,w:100,h:38},{x:655,y:1872,w:117,h:46}],
   objs:[{id:'fountain',x:415,y:960,w:290,h:235,solid:true,at:{x:455,y:1205,f:'up'}},{id:'shopSign',x:250,y:1650,w:100,h:150},{id:'leafA',x:110,y:1080,w:110,h:100},{id:'leafB',x:890,y:1220,w:110,h:100},{id:'leafC',x:830,y:1530,w:110,h:100}],
   post:function(){plazaWeather();if(qActive('leaves','collect')){var f=Math.floor(t/260)%3;[['A',165,1140],['B',945,1280],['C',885,1590]].forEach(function(l){if(S.lp[l[0]])return;ctx.fillStyle='rgba(255,230,150,.9)';var r=6+f*3;ctx.fillRect(l[1]-r,l[2]-2,r*2,4);ctx.fillRect(l[1]-2,l[2]-r,4,r*2);ctx.fillStyle='#d8431f';ctx.fillRect(l[1]-8,l[2]-5,16,10)})}},
-  fg:[{x:360,y:630,w:395,h:320,base:945,poly:[[365,845],[372,800],[395,770],[440,730],[470,682],[515,652],[555,636],[600,650],[650,672],[700,697],[732,752],[746,792],[742,842],[712,890],[672,922],[645,945],[522,945],[468,925],[425,892]]}],
+  fg:[{x:360,y:630,w:395,h:320,base:945,poly:[[365,845],[372,800],[395,770],[440,730],[470,682],[515,652],[555,636],[600,650],[650,672],[700,697],[732,752],[746,792],[742,842],[712,890],[672,922],[645,945],[522,945],[468,925],[425,892]]},
+    /* 상점 앞 물약 두 병·나무 상자: 뒤로 지나가면 발이 가려짐 */
+    {x:375,y:1840,w:106,h:80,base:1916,poly:[[378,1880],[383,1860],[392,1843],[425,1843],[431,1860],[433,1872],[440,1866],[447,1845],[468,1845],[472,1866],[478,1880],[476,1898],[445,1902],[433,1905],[428,1917],[384,1917],[378,1900]]},
+    {x:655,y:1849,w:117,h:70,base:1918}],
   exits:[{x:60,y:830,w:150,h:60,to:'inn1',sp:'inn1Door'},{x:895,y:830,w:120,h:60,to:'tavern',sp:'tavernDoor'},{x:495,y:1870,w:130,h:50,to:'shop',sp:'shopDoor'},{x:440,y:400,w:240,h:50,to:'school',sp:'schoolDoor'}]};
 
 var CN='inn1',C=SC.inn1;
@@ -735,7 +758,7 @@ var LCOL={c:'255,200,110',l:'255,196,110',f:'255,140,60',w:'255,205,130',n:'175,
 function drawLights(){
   var L=C.lights;if(!L)return;
   var i,l,x,y,a,r,fl,col,k,ph=S.phase,dim=1;
-  if(CN==='plaza')dim=ph===1?.35:(ph===0?.6:1);
+  if(CN==='plaza')dim=ph===1?.5:(ph===0?.7:1);
   if(CN==='attic'&&ph!==3){dim=ph===2?.85:.6}
   ctx.save();ctx.globalCompositeOperation='lighter';
   for(i=0;i<L.length;i++){
@@ -743,7 +766,7 @@ function drawLights(){
     switch(k){
       case 'c':fl=.72+.18*Math.sin(t/83+i*2.7)+.1*Math.sin(t/37+i);a=.34;break;
       case 'f':fl=.72+.16*Math.sin(t/61+i)+.12*Math.sin(t/23+i*1.7)+.06*Math.sin(t/140);a=.38;r=r*(1+.05*Math.sin(t/90+i));break;
-      case 'l':fl=.8+.1*Math.sin(t/230+i*1.3)+.07*Math.sin(t/73+i*2.1)+.05*Math.sin(t/29+i);a=.32;break;
+      case 'l':fl=.74+.13*Math.sin(t/230+i*1.3)+.09*Math.sin(t/73+i*2.1)+.06*Math.sin(t/29+i);a=.36;r=r*(1+.06*Math.sin(t/170+i*1.7));break;
       case 'w':fl=.85+.1*Math.sin(t/420+i*2);a=.2;break;
       case 'n':fl=(Math.sin(t/55+i)>.93)?.35:(.85+.08*Math.sin(t/210));a=.34;break;
       case 'g':fl=.6+.4*Math.sin(t/520+i);a=.3;break;
@@ -756,6 +779,18 @@ function drawLights(){
     g.addColorStop(0,'rgba('+col+','+al.toFixed(3)+')');g.addColorStop(.45,'rgba('+col+','+(al*.35).toFixed(3)+')');g.addColorStop(1,'rgba('+col+',0)');
     ctx.fillStyle=g;ctx.fillRect(x-r,y-r,r*2,r*2);
   }
+  ctx.restore();
+  if(CN==='plaza')for(i=0;i<L.length;i++)if(L[i][2]==='l')lampFlame(L[i][0],L[i][1],i);
+}
+/* 광장 가로등 유리 안의 도트 불꽃: 칸(4px) 단위로 높이·기울기가 바뀌며 일렁임. 아멜리아가 등불 앞을 가리면 그리지 않음 */
+function lampFlame(x,y,i){
+  if(px-20<x+14&&px+HW+20>x-14&&py-170<y+18&&py+HH>y-4)return;
+  var u=4,k=Math.floor(t/120)+i*7,n=function(a){var v=Math.sin(a*12.9898+i*78.233)*43758.5453;return v-Math.floor(v)};
+  var h=3+Math.floor(n(k)*2.6),sw=n(k+3)<.25?-1:(n(k+3)>.75?1:0),bx=Math.round(x/u)*u-u,by=Math.round((y+14)/u)*u;
+  ctx.save();ctx.globalAlpha=.55+.25*n(k+5);ctx.fillStyle='rgba(255,226,140,.22)';ctx.fillRect(bx-u*2,by-u*4,u*6,u*4);ctx.globalAlpha=1;
+  ctx.fillStyle='#ff9a2a';ctx.fillRect(bx-u/2,by-u*(h-1),u*3,u*(h-1));ctx.fillRect(bx+sw*u,by-u*h,u*2,u);
+  ctx.fillStyle='#ffd060';ctx.fillRect(bx,by-u*(h-1),u*2,u*(h-1));ctx.fillRect(bx+sw*u+(sw>0?0:u),by-u*h,u,u);
+  ctx.fillStyle='#fff6c8';ctx.fillRect(bx+(sw>0?u:0),by-u*2,u,u*2);
   ctx.restore();
 }
 /* ---------- 다락방 창밖 풍경 (시간대별) ---------- */
@@ -1329,20 +1364,20 @@ var LORE_SPK={orga:{n:'오르가',p:'orga'},bran:{n:'브란',p:'bran'},wella:{n:
 var LORE={
   orga:[
     {t:'삐걱이는 계단',l:['저 계단은 여관이 지어질 때부터 있었단다. 밤마다 몰래 내려와 난로 앞에서 책을 읽던 손님이 있었는데, 그 소리가 삐걱삐걱 들리곤 했지.','그래서 밤에 계단이 삐걱이면 나는 우유를 데워 둬요. …누가 마시는지는 비밀이에요.']},
-    {t:'광장의 단풍나무',l:['광장 분수의 단풍나무는 마법학교 첫 입학생들이 심었다고 해요. 해마다 가장 먼저 붉어져서, 그 나무가 물들면 학기가 시작됐다는 신호가 되죠.','올해도 제일 먼저 붉어졌답니다. 아멜리아가 오는 걸 알았나 봐요.']},
+    {t:'광장의 단풍나무',l:['광장 분수의 단풍나무는 마법학교 첫 입학생들이 심었다고 해요. 해마다 가장 먼저 붉어져서, 그 나무가 물들면 학기가 시작됐다는 신호가 되죠.','올해도 제일 먼저 붉어졌답니다. 아멜리아가 오는 걸 알았나 봐요.'],c0:['광장 분수의 단풍나무는 마법학교 첫 입학생들이 심었다고 해요. 해마다 가장 먼저 붉어져서, 그 나무가 물들면 학기가 시작됐다는 신호가 되죠.','올해도 제일 먼저 붉어졌어요. 그래서 새 학생이 올 때가 된 줄 알았지요.']},
     {t:'꺼지지 않는 난로',l:['저 난로는 여관이 문을 연 날부터 한 번도 꺼진 적이 없단다. 불씨를 다음 날로 옮기는 게 우리 집안의 일이에요.','어느 추운 밤, 길 잃은 마법사가 저 불빛을 보고 찾아온 적도 있어요. 그 사람은 지금도 가끔 엽서를 보내 준단다.']},
     {t:'선술집의 수프',l:['건너편 선술집 브란은 말수가 적지만 수프만큼은 마을에서 제일이에요. 따뜻한 걸 말 대신 건네는 사람이거든요.','가끔 우리 여관 손님도 몰래 그 수프를 먹으러 간답니다. 나는 모르는 척하지만요.']},
-    {t:'벽의 엽서들',l:['이 여관 손님들은 대부분 학교 입학생이나 졸업생이란다. 졸업하고 떠난 아이들이 가끔 엽서를 보내 줘요.','벽에 붙은 엽서가 보이죠? 아멜리아도 언젠가 한 장 보내 줄래요?']},
-    {t:'창가의 화분',l:['다락방 창가 화분 말이에요, 그건 처음 우리 여관에 묵었던 학생이 두고 간 거란다.','물은 사흘에 한 번이면 돼요. 아멜리아가 맡아 주면 그 애도 기뻐할 거예요.']},
+    {t:'벽의 엽서들',b:1,l:['이 여관 손님들은 대부분 학교 입학생이나 졸업생이란다. 졸업하고 떠난 아이들이 가끔 엽서를 보내 줘요.','벽에 붙은 엽서가 보이죠? 아멜리아도 언젠가 한 장 보내 줄래요?']},
+    {t:'창가의 화분',b:1,l:['다락방 창가 화분 말이에요, 그건 처음 우리 여관에 묵었던 학생이 두고 간 거란다.','물은 사흘에 한 번이면 돼요. 아멜리아가 맡아 주면 그 애도 기뻐할 거예요.']},
     {t:'우유 데우는 법',l:['우유는 끓기 직전에 불을 꺼야 해요. 그러면 위에 얇은 막이 안 생긴단다.','브란은 꿀을 넣고, 나는 계피를 조금 넣어요. 아멜리아는 어느 쪽이 좋아요?']}
   ],
   bran:[
-    {t:'수프의 비밀',l:['…수프 육수에는 별빛 차 찌꺼기를 아주 조금 넣어요. 말하면 안 되는 비밀인데.','…아멜리아니까 말해 주는 겁니다. 웰라한테는 말하지 마요. 다 마셔 버리니까.']},
+    {t:'수프의 비밀',b:1,l:['…수프 육수에는 별빛 차 찌꺼기를 아주 조금 넣어요. 말하면 안 되는 비밀인데.','…아멜리아니까 말해 주는 겁니다. 웰라한테는 말하지 마요. 다 마셔 버리니까.'],c1:['…수프 육수에는 별빛 차 찌꺼기를 아주 조금 넣어요. 말하면 안 되는 비밀인데.','…매일 오니까 말해 주는 거예요. 웰라한테는 말하지 마요. 다 마셔 버리니까.']},
     {t:'404라는 이름',l:['…상점 쪽 카페 이름이 404인 건 알죠. 웰라가 메뉴판 한 칸을 잘못 적어서 생긴 이름이라고 하더군요.','…덕분에 그 없는 메뉴를 시키는 손님이 생겼다던데. 웰라는 그때마다 진땀을 흘린대요.']},
     {t:'장작 소리',l:['…난 장작 타는 소리를 들으면 마음이 풀려요. 소리가 평소보다 커지면 날씨가 바뀐다는 뜻이고요.','…오늘 밤은 조용하네요. 좋은 밤이에요.']},
-    {t:'비어 있는 자리',l:['…저 구석 자리는 늘 비워 둬요. 오래전부터 매일 같은 시간에 오던 손님의 자리죠.','…언젠가 돌아올 거라고 생각해서 치우지 않아요. …아니, 그냥 습관이에요.']},
+    {t:'비어 있는 자리',b:1,l:['…저 구석 자리는 늘 비워 둬요. 오래전부터 매일 같은 시간에 오던 손님의 자리죠.','…언젠가 돌아올 거라고 생각해서 치우지 않아요. …아니, 그냥 습관이에요.']},
     {t:'새벽의 빵',l:['…빵은 해 뜨기 전에 구워요. 그 시간엔 마을이 조용해서 반죽이 잘 부풀거든요.','…가끔 시나가 창틀에서 지켜봐요. 냄새 때문인지, 온기 때문인지는 모르겠지만.']},
-    {t:'나무 숟가락',l:['…카운터 뒤에 걸린 나무 숟가락들은 제가 깎은 거예요. 단골손님 이름을 하나씩 새겼죠.','…아멜리아 것도 하나 깎는 중이에요. 아직은 비밀이에요.']},
+    {t:'나무 숟가락',b:2,l:['…카운터 뒤에 걸린 나무 숟가락들은 제가 깎은 거예요. 단골손님 이름을 하나씩 새겼죠.','…아멜리아 것도 하나 깎는 중이에요. 아직은 비밀이에요.']},
     {t:'비 오는 날의 선술집',l:['…비 오는 날엔 손님이 더 많아요. 다들 젖은 망토를 난로 앞에 걸어 두고 가죠.','…그런 날은 수프를 한 솥 더 끓여요. 비 냄새랑 수프 냄새가 섞이면, 그게 가을이에요.']}
   ],
   wella:[
@@ -1350,7 +1385,7 @@ var LORE={
     {t:'주머니 속 사탕',l:['저 가끔 주머니에 사탕이 들어 있어요. 누가 넣었는지는 몰라요, 하하!','시나는 스승님이 넣으신 거라고 하는데… 에이, 그 스승님이 그러실 리가요! …그렇죠? 하하!']},
     {t:'빗자루 속도',l:['빗자루로 광장을 한 바퀴 도는 데 지난주엔 열 숨이었는데 오늘은 여덟 숨이에요! 하하!','시나는 아홉 숨이래요. …자기가 세어 놓고 왜 화를 내는지 모르겠어요, 하하!']},
     {t:'시나를 만난 날',l:['시나는 숲에서 만났어요. 비 오는 날 상자 속에서 "…시끄럽다냥" 하길래 고양이가 말하는 줄 알고 놀랐죠, 하하!','지금은 같은 집에 살아요. 우유는 언제나 시나 몫이 먼저예요!']},
-    {t:'수확 등불제',l:['시월 중순에 수확 등불제가 열려요! 마을 사람들이 등불을 하나씩 들고 광장에 모여요.','저는 작년에 등불을 놓쳐서 분수에 빠뜨렸어요, 하하! 올해는 아멜리아 님이랑 같이 들고 싶어요!']},
+    {t:'수확 등불제',b:1,l:['시월 중순에 수확 등불제가 열려요! 마을 사람들이 등불을 하나씩 들고 광장에 모여요.','저는 작년에 등불을 놓쳐서 분수에 빠뜨렸어요, 하하! 올해는 아멜리아 님이랑 같이 들고 싶어요!']},
     {t:'첫 마법',l:['제 첫 마법은 촛불이었어요! …사실 세 번 실패하고 네 번째에 앞머리를 태웠죠, 하하!','스승님이 그날 "불꽃이 너를 꽤 좋아하는구나" 하셨어요. 칭찬 맞죠?']},
     {t:'404번째 메뉴',l:['카페 메뉴판, 제가 적은 거 아세요? 한 칸 비워 둔 게 404번째 메뉴래요, 하하!','알레센도 님은 "없는 메뉴를 찾는 손님도 손님이에요" 하시면서 그대로 두셨어요.']}
   ],
@@ -1359,13 +1394,13 @@ var LORE={
     {t:'1482년',l:['이 가게는 1482년부터 이 자리에 있어요. 간판 밑의 숫자는 처음 문을 연 해랍니다.','지금까지 장부는 한 권도 버린 적이 없어요. 낡으면 새 책이 옆에 앉을 뿐이죠.']},
     {t:'장부 위의 낙서',l:['웰라는 가끔 장부에 낙서를 해요. 꾸지람을 해야 하는데…','이상하게도 그 낙서가 있는 쪽이 장부를 더 환하게 만들더군요. 비밀로 해 주세요.']},
     {t:'조용한 오후',l:['손님이 없는 오후 두 시쯤이 가장 좋아요. 먼지가 햇빛 속에서 천천히 가라앉는 걸 보고 있으면,','시간이 장부 위에 살며시 앉는 것 같거든요.']},
-    {t:'잉크의 색',l:['장부 잉크는 계절마다 바꿔요. 가을에는 단풍잎을 우려 만든 붉은 갈색이죠.','아멜리아, 나중에 장부를 넘겨 보면 계절이 보일 거예요.']},
+    {t:'잉크의 색',b:1,l:['장부 잉크는 계절마다 바꿔요. 가을에는 단풍잎을 우려 만든 붉은 갈색이죠.','아멜리아, 나중에 장부를 넘겨 보면 계절이 보일 거예요.']},
     {t:'마음의 무게',l:['물건을 팔 때는 무게만이 아니라 마음도 같이 달아요.','오래 쓰던 물건을 팔러 온 손님께는, 조금 더 천천히 값을 말씀드리죠.']},
     {t:'카운터 밑 우산',l:['구름 사건 뒤로 카운터 밑에 우산을 하나 두고 있어요.','쓸 일이 없으면 좋겠지만… 웰라가 들어올 때면 손이 저절로 그쪽으로 가요.']}
   ],
   owl:[
     {t:'밤의 장부',l:['낮에는 알레센도가 쓰고, 밤의 장부는 내가 쓴다네.','가게에 들어온 별빛의 수까지 적어 둔다네. 호오…']},
-    {t:'오래된 약속',l:['이 가게에는 지켜야 할 약속이 몇 가지 있다네.','가장 오래된 것은, 맡겨진 물건은 주인이 올 때까지 돌려주지 않는다는 거지. 호오…']},
+    {t:'오래된 약속',b:1,l:['이 가게에는 지켜야 할 약속이 몇 가지 있다네.','가장 오래된 것은, 맡겨진 물건은 주인이 올 때까지 돌려주지 않는다는 거지. 호오…']},
     {t:'첫 등불',l:['광장의 첫 등불은 이 가게 지붕에서 불붙은 것이라네.','언젠가 그 얘기를 들려줄 날이 오겠지. 호오…']},
     {t:'별을 세는 일',l:['밤마다 창밖 별을 세어 장부에 적는다네.','어제보다 하나 적으면, 누군가 소원을 빌어 간 거지. 호오…']},
     {t:'밤손님',l:['밤에 오는 손님은 대개 잠이 오지 않는 사람들이라네.','그럴 땐 물건보다 따뜻한 차 한 잔을 권하지. 그건 장부에 적지 않는다네.']},
@@ -1381,13 +1416,15 @@ var LORE={
   ],
   sina:[
     {t:'난로 옆 자리',l:['…난로 옆 자리는 내 거다냥. …웰라가 앉으면 비켜 줄 때도 있다냥. …가끔이다냥.']},
-    {t:'지붕 위의 순서',l:['…지붕 위에서 보면 마을 등불이 켜지는 순서가 있다냥. …여관, 선술집, 그다음이 학교다냥.','…같이 볼래냥? …아니, 혼자 볼 거다냥.']},
+    {t:'지붕 위의 순서',b:2,l:['…지붕 위에서 보면 마을 등불이 켜지는 순서가 있다냥. …여관, 선술집, 그다음이 학교다냥.','…같이 볼래냥? …아니, 혼자 볼 거다냥.']},
     {t:'일곱 번',l:['…웰라가 폭발시킨 포션은 일곱 번이다냥. …내가 셌다냥.','…세고 싶어서 센 건 아니다냥. 소리가 시끄러워서 센 거다냥.']},
     {t:'오후 세 시',l:['…분수 가장자리는 오후 세 시에 제일 따뜻하다냥. …그 시간엔 비켜라냥.']},
     {t:'꼬리의 말',l:['…꼬리를 탁탁 치는 건 기분 나쁘다는 뜻이 아니다냥. …생각 중이라는 뜻이다냥.','…대부분은 기분 나쁜 거다냥.']},
     {t:'은빛 지붕',l:['…달이 밝은 밤엔 지붕 위가 은색이 된다냥. …그날은 마법이 조금 더 잘 된다냥.','…웰라한텐 말하지 마라냥. 또 지붕에 올라온다냥.']}
   ]
 };
+/* 친한 정도: 0 처음 만난 사이(1~3일차), 1 얼굴을 익힌 사이(4~7일차), 2 부탁을 주고받는 사이(8일차~) */
+function bond(){return S.day<=3?0:(S.day<=7?1:2)}
 function loreF(){if(!S.lore)S.lore={};if(!S.loreDay)S.loreDay={};return S.lore}
 function loreCount(){loreF();var n=0;Object.keys(LORE).forEach(function(k){LORE[k].forEach(function(e,i){if(S.lore[k+i])n++})});return n}
 function loreTotal(){var n=0;Object.keys(LORE).forEach(function(k){n+=LORE[k].length});return n}
@@ -1396,11 +1433,11 @@ function tellLore(npc,after){
   var dv=dayEv(),dk=S.cal.m+'-'+S.cal.d+npc;if(!S.evHeard)S.evHeard={};
   if(dv&&dv.l[npc]&&!S.evHeard[dk]){S.evHeard[dk]=1;var sp0=LORE_SPK[npc],o0={n:sp0.n,t:dv.l[npc]};if(sp0.p)o0.p=sp0.p;say([o0],{done:function(){autoSave();if(after)after()}});return true}
   if(S.loreDay[npc]===S.day)return false;
-  var i=0;while(i<L.length&&S.lore[npc+i])i++;
+  var bd=bond(),i=0;while(i<L.length&&(S.lore[npc+i]||(L[i].b||0)>bd))i++;
   if(i>=L.length)return false;
   var e=L[i],spk=LORE_SPK[npc];
   S.loreDay[npc]=S.day;
-  var lines=e.l.map(function(t){var o={n:spk.n,t:t};if(spk.p)o.p=spk.p;return o});
+  var lines=(bd===0&&(e.c0||e.c1)||bd===1&&e.c1||e.l).map(function(t){var o={n:spk.n,t:t};if(spk.p)o.p=spk.p;return o});
   say(lines,{done:function(){S.lore[npc+i]=1;showToast('마을 이야기 '+loreCount()+'/'+loreTotal(),e.t,3200);sfx('toast');autoSave();if(after)after()}});
   return true;
 }
@@ -1610,7 +1647,9 @@ function sayOrga(){
   if(lightsOrga())return;
   if(qActive('bell','clues')&&!(S.bl&&S.bl.orga)){say([{n:'오르가',p:'orga',t:'시나 방울 말이에요? 어제 새벽에 현관을 나설 땐 분명 딸랑딸랑 소리가 났어요.'},{n:'오르가',p:'orga',t:'그 애는 아침이면 꼭 광장부터 들르거든요. …광장 어딘가에 떨어뜨렸을지도 모르겠네요.'}],{done:function(){bellClue('orga')}});return}
   if(S.day>=2&&tellLore('orga'))return;
-  if(S.day>=2){say([{n:'오르가',p:'orga',t:'어서 와요, 아멜리아. 잘 잤어요?'},{n:'오르가',p:'orga',t:'오늘은 광장으로 나가 보렴. 마을은 작으니 금방 익숙해질 거예요.'}]);return}
+  if(S.day>=2){var ob=bond();say(ob===0?[{n:'오르가',p:'orga',t:'잘 쉬었어요? 다락방이 춥진 않았는지 모르겠네요.'},{n:'오르가',p:'orga',t:'광장은 문 나가면 바로예요. 학교는 그 위 계단이고요.'}]
+    :ob===1?[{n:'오르가',p:'orga',t:'아, 아멜리아. 오늘도 학교 가요?'},{n:'오르가',p:'orga',t:'다녀와요. 저녁엔 난로 앞자리가 비어 있을 거예요.'}]
+    :[{n:'오르가',p:'orga',t:'어서 와요, 아멜리아. 잘 잤어요?'},{n:'오르가',p:'orga',t:'오늘은 광장으로 나가 보렴. 마을은 작으니 금방 익숙해질 거예요.'}]);return}
   if(S.key){say([{n:'오르가',p:'orga',t:'잊은 건 없죠? 계단은 저쪽이란다. 삐걱거려도 놀라지 말렴.'}]);return}
   say([
     {n:'오르가',p:'orga',t:'어서 와요, 새 학생이죠? 마법학교 안내서에 이름이 있던걸요. 아멜리아, 맞죠?'},
@@ -1686,7 +1725,7 @@ function sayBran(){
       say([{n:'브란',p:'bran',t:'…등불 말이죠. 우리 집 난로도 불티가 자꾸 광장 쪽으로 날아가요.'},{n:'브란',p:'bran',t:'…누가 부르는 것처럼요. 방향은 상점 지붕 쪽이던데. …그쪽에 물어보는 게 빠르겠어요.'}],{done:function(){lightsClue('bran')}})}});
     if(festOn()&&!festF().cook)ch.unshift({label:'등불제 이야기를 듣는다',run:festBran});
     ch.push({label:'그만둔다'});
-    say([{n:'브란',p:'bran',t:first?'…처음 보는 얼굴이네요. 앉아요.':'어서 와요. 뭘 드릴까요.'}],{choices:ch});
+    say([{n:'브란',p:'bran',t:first?'…처음 보는 얼굴이네요. 앉아요.':['…뭘 드릴까요.','…또 왔네요. 뭘 드릴까요.','어서 와요, 아멜리아. 뭘 드릴까요.'][bond()]}],{choices:ch});
   };
   if(!first&&tellLore('bran',menu))return;
   menu();
@@ -1712,8 +1751,8 @@ function sayAlesendo(){
   if(!S.metAles){
     say([
       {n:'알레센도',p:'alesendo',t:'어서 오세요. 새 학생이시죠? 아멜리아, 맞나요?'},
-      {n:'알레센도',p:'alesendo',t:'이곳은 마법 상점이에요. 한쪽은 카페 404 DRINK BAR이고요. 장부에는 골드만 있는 게 아니에요. 아멜리아가 보낸 시간도 함께 쌓이게 될 거예요.'},
-      {n:'알레센도',p:'alesendo',t:'입학을 축하해요. 필요한 게 생기면 언제든 들러 주세요.'}
+      {n:'알레센도',p:'alesendo',t:'이곳은 마법 상점이에요. 한쪽은 카페 404 DRINK BAR이고요. 저는 서기관 알레센도라고 해요.'},
+      {n:'알레센도',p:'alesendo',t:'수업에 필요한 재료는 대부분 여기 있어요. 필요하시면 들러 주세요.'}
     ],{done:function(){S.metAles=true;shopMenu('ales')}});
     return;
   }
@@ -1722,7 +1761,8 @@ function sayAlesendo(){
 }
 var ALES_LINES=['숫자를 적는 일은 조용해서 좋아요. …아멜리아가 오면 장부에 작은 별표를 그려 둘게요.','마법스승님과는 오래된 사이예요. 저울 없이 재료를 재면 실패한다고, 늘 그분이 말씀하셨죠.','그분은 엄격하지만… 예고도 없이 오셔서, 오래전에 맡겨 둔 물건을 찾아가시곤 해요. 이번에는 언제 오실지.','웰라는 후배 같은 아이예요. 가끔 포션이 폭발해서 장부에 얼룩이 생기지만요.','밤에는 올빼미 선배님이 장부를 이어 적어 주세요. 그 덕에 이 가게는 하루도 비지 않아요.'];
 var alesI=0;
-function alesTalk(){say([{n:'알레센도',p:'alesendo',t:ALES_LINES[(alesI++)%ALES_LINES.length]}])}
+var ALES_B=[2,1,1,0,0];/* ALES_LINES 각 줄을 꺼내는 친한 정도 */
+function alesTalk(){var L=ALES_LINES.filter(function(x,i){return ALES_B[i]<=bond()});say([{n:'알레센도',p:'alesendo',t:L[(alesI++)%L.length]}])}
 var OWL_LINES=['알레센도는 낮의 장부를, 나는 밤의 장부를 적는다네. 이 가게가 하루도 비지 않는 건 그 덕이지. 호오…','이 가게는 1482년부터 이 자리에 있었다네. 처음 등불을 건 날도 기억하지… 호오.','알레센도는 좋은 서기관일세. 가끔 선배 대접이 지나쳐서 곤란하지만. 호오…','밤에는 별빛 차가 제일 잘 우러난다네. 잠이 안 오면 언제든 들르시게.'];
 var owlI=0;
 function owlTalk2(){say([{n:'올빼미',t:OWL_LINES[(owlI++)%OWL_LINES.length]}])}
@@ -2706,12 +2746,26 @@ function drawTitle(){
   if(state==='title'||state==='boot'){ctx.textAlign='center';ctx.font='26px Galmuri11, sans-serif';ctx.fillStyle='rgba(185,168,138,.8)';ctx.fillText('데모 '+VERSION.split(' ')[0],W/2,H-40);ctx.textAlign='start'}
 }
 var sbtnEl=document.getElementById('sbtn'),bootEl=document.getElementById('boot'),bootBar=document.getElementById('bbar'),bootP=document.getElementById('bp'),titleEl=document.getElementById('title');
+/* 불러오기 바 무늬: 왼쪽 짙은 주황 → 오른쪽 밝은 금색으로 6단계, 단계 사이는 바둑판 디더링(도트 그라데이션). 칸 하나 = 화면 도트 하나 */
+function barTex(w){
+  var P=[[122,52,16],[164,80,26],[201,112,30],[232,150,46],[242,178,76],[255,227,154]],c=document.createElement('canvas');c.width=w;c.height=5;
+  var g=c.getContext('2d'),B=[[0,.5],[.75,.25]],x,y,t,i,k,q;
+  for(x=0;x<w;x++)for(y=0;y<5;y++){
+    t=x/Math.max(1,w-1)*(P.length-1);i=Math.floor(t);k=(t-i>B[y%2][x%2]+.125)?Math.min(i+1,P.length-1):i;q=P[k].slice();
+    if(y===0)q=q.map(function(v){return Math.min(255,v+40)});if(y===4)q=q.map(function(v){return v*.62|0});
+    g.fillStyle='rgb('+q.join(',')+')';g.fillRect(x,y,1,1);
+  }
+  return c.toDataURL();
+}
 function startBoot(){
   state='boot';try{if(typeof ASSETS!=='undefined'&&ASSETS.title_bg)bootEl.style.backgroundImage='url('+ASSETS.title_bg+')'}catch(e){}
   var keys=Object.keys(IMG),n=keys.length,fin=false;
   function chk(){
     var d=0;keys.forEach(function(k){var im=IMG[k];if(im.complete)d++});
-    bootBar.style.width=Math.round(d/n*100)+'%';
+    /* 도트 칸(6px 단위)씩 끊어서 차오름 */
+    var pxu=parseFloat(getComputedStyle(bootBar).getPropertyValue('--px'))||3,seg=pxu*6,iw=bootBar.parentNode.clientWidth-pxu*2;
+    if(!bootBar.style.backgroundImage)bootBar.style.backgroundImage='url('+barTex(Math.round(iw/pxu))+')',bootBar.style.backgroundSize=iw+'px 100%';
+    bootBar.style.width=(d>=n?iw:Math.floor(d/n*iw/seg)*seg)+'px';
     if(d>=n&&!fin){fin=true;
       var go=function(e){window.removeEventListener('pointerdown',go,true);window.removeEventListener('keydown',go,true);audInit();bootEl.classList.add('off');showTitle()};
       setTimeout(function(){bootP.textContent='화면을 터치하세요';bootP.classList.add('on');bootBar.parentNode.classList.add('full');window.addEventListener('pointerdown',go,true);window.addEventListener('keydown',go,true)},250);return}
