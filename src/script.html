@@ -215,8 +215,9 @@ function sfx(name,a){
       def:기본값, min/max/step(range), options:[{v:값,l:글자}](select), apply:function(값){...}, run:function(){...}(button)}
    - 새 탭은 tab 이름만 새로 쓰면 생겨요.
    ===================================================================== */
-var VERSION='0.45 데모';
+var VERSION='0.46 데모';
 var CHANGES=[
+  '0.46  이야기 4편 \'웰라의 구름 소동\' 추가(수프 대회 다음 날부터, 광장 웰라 → 상점에서 방법 묻기 → 분수 앞 바람결로 구름 모으기 → 물결로 빗물 내려보내기 → 무지개와 시나의 "여덟 번째다냥"). 광장에 도트 구름·비·무지개. 마을 이야기 27편 → 46편. 날짜별 소소한 일 9가지(가을비·안개·보름달·추분·첫서리·바람 부는 날·시월의 마지막 날 등): 아침 문구와 그날 처음 말 걸면 듣는 한마디, 비 오는 날은 광장에 비',
   '0.45  이야기 3편 \'브란의 가을 수프 대회\' 추가(시나의 방울을 찾은 다음 날부터, 선술집 브란 → 약초·웰라의 단풍잎·스승님의 달빛 버섯 → 불꽃으로 불 맞추기 → 저녁 수프 대회). 첫 화면 불러오기 바를 금빛 그라데이션으로. 선택지가 막 나타난 순간의 터치는 무시(빨리 넘기다 잘못 고르는 일 방지). 시작 화면 로고를 금빛 도트 글자 + 빨간 리본 \'빌리지\'로, 버튼을 금테 나무 명판으로. 그림을 WebP로 바꿔 파일 크기 약 6MB → 3.9MB(화질 거의 그대로), 안 쓰는 옛 코드 정리',
   '0.44  미니게임 6종을 도트 그림으로 새로 그림(펼친 마법책 판 + 양피지 제목 띠 + 금빛 보석 진행 표시, 빛은 점묘로 번짐). 마법학교 느낌으로 소품도 새로: 룬이 새겨진 돌 석판(바람결), 놋쇠 촛대와 도는 마법진(불꽃), 받침 위 수정구(빛 모으기), 놋쇠 종(속삭임), 물방울과 푸른 수정(물결), 해·달 메달(그림자). 대화창·설정·일지·상점 창을 나무 틀 + 양피지 바탕으로, 버튼·이름표·초상화 틀·상단 버튼·알림 창도 도트 틀로 교체. 테스트 탭의 미니게임 \'해 보기\'가 타이틀 화면에서 아무 반응이 없던 문제 수정(이제 타이틀에서도 바로 시작, 알림이 설정 창 뒤에 가려지던 문제도 수정). 연습 미니게임에 \'그만두기\' 버튼(Esc) 추가, 테스트 탭에서 한 미니게임은 끝나거나 그만두면 테스트 탭으로 돌아옴. 첫 화면 불러오기 바를 나무 틀 + 금빛 칸 막대로 교체',
   '0.43  이야기 2편 \'시나의 잃어버린 방울\' 추가(사라진 가을 불빛을 끝낸 다음 날부터, 광장의 시나 → 오르가·브란 단서 → 광장 단풍나무 앞에서 바람결 → 웰라의 빗자루 → 시나에게 돌려주기). 설정의 테스트 탭에 \'미니게임 바로 해 보기\' 버튼 6개 추가(기록에 남지 않음)',
@@ -431,7 +432,7 @@ SC.plaza={place:'아델라인 광장',bg:'bg_plaza',npcs:[{img:'npc_wella',x:520
     {x:345,y:1320,w:440,h:530},{x:250,y:1650,w:100,h:150},{x:300,y:1790,w:60,h:70},{x:755,y:1740,w:100,h:170},
     {x:25,y:1780,w:130,h:200},{x:905,y:1830,w:211,h:170}],
   objs:[{id:'fountain',x:415,y:960,w:290,h:235,solid:true,at:{x:455,y:1205,f:'up'}},{id:'shopSign',x:250,y:1650,w:100,h:150},{id:'leafA',x:110,y:1080,w:110,h:100},{id:'leafB',x:890,y:1220,w:110,h:100},{id:'leafC',x:830,y:1530,w:110,h:100}],
-  post:function(){if(qActive('leaves','collect')){var f=Math.floor(t/260)%3;[['A',165,1140],['B',945,1280],['C',885,1590]].forEach(function(l){if(S.lp[l[0]])return;ctx.fillStyle='rgba(255,230,150,.9)';var r=6+f*3;ctx.fillRect(l[1]-r,l[2]-2,r*2,4);ctx.fillRect(l[1]-2,l[2]-r,4,r*2);ctx.fillStyle='#d8431f';ctx.fillRect(l[1]-8,l[2]-5,16,10)})}},
+  post:function(){plazaWeather();if(qActive('leaves','collect')){var f=Math.floor(t/260)%3;[['A',165,1140],['B',945,1280],['C',885,1590]].forEach(function(l){if(S.lp[l[0]])return;ctx.fillStyle='rgba(255,230,150,.9)';var r=6+f*3;ctx.fillRect(l[1]-r,l[2]-2,r*2,4);ctx.fillRect(l[1]-2,l[2]-r,4,r*2);ctx.fillStyle='#d8431f';ctx.fillRect(l[1]-8,l[2]-5,16,10)})}},
   fg:[{x:360,y:630,w:395,h:320,base:945,poly:[[365,845],[372,800],[395,770],[440,730],[470,682],[515,652],[555,636],[600,650],[650,672],[700,697],[732,752],[746,792],[742,842],[712,890],[672,922],[645,945],[522,945],[468,925],[425,892]]}],
   exits:[{x:60,y:830,w:150,h:60,to:'inn1',sp:'inn1Door'},{x:895,y:830,w:120,h:60,to:'tavern',sp:'tavernDoor'},{x:495,y:1870,w:130,h:50,to:'shop',sp:'shopDoor'},{x:440,y:400,w:240,h:50,to:'school',sp:'schoolDoor'}]};
 
@@ -477,7 +478,12 @@ var QUESTS={
   soup:{title:'브란의 가을 수프 대회',order:['gather','cook','judge'],steps:{
     gather:function(){return '가을 수프 재료 모아 브란에게 (약초'+(hasItem('herb')?' ✔':'')+' · 붉은 단풍잎'+(hasItem('redleaf')?' ✔':'')+' · 달빛 버섯'+(hasItem('moonshroom')?' ✔':'')+')'},
     cook:'선술집 브란과 수프 불 맞추기',
-    judge:'저녁에 선술집에서 수프 대회 지켜보기'}}
+    judge:'저녁에 선술집에서 수프 대회 지켜보기'}},
+  cloud:{title:'웰라의 구름 소동',order:['ask','gather','rain','wella'],steps:{
+    ask:'상점에서 구름 치우는 법 물어보기',
+    gather:'광장 분수 앞에서 바람결로 구름 모으기',
+    rain:'광장 분수 앞에서 물결로 빗물 내려보내기',
+    wella:'광장의 웰라에게 가 보기'}}
 };
 var ITEMS={
   key:{n:'다락방 열쇠',d:'오르가 아주머니에게 받은 열쇠. 손잡이에 작은 별이 새겨져 있다.',keep:1},
@@ -487,6 +493,7 @@ var ITEMS={
   bookmark:{n:'단풍 책갈피',d:'웰라가 만들어 준 책갈피. 은은하게 가을 냄새가 난다.',sell:15},
   tea:{n:'별빛 차',d:'마시면 오늘 하루 마법 연습이 한결 쉬워져요. (연습 숙련도 효과 +1, 하루)',buy:12,sell:5,use:function(){S.buff.tea=S.day;showToast('별빛 차','오늘은 마법 연습이 쉬워져요',3000);sfx('toast')}},
   herb:{n:'마법 약초',d:'향긋한 푸른 잎. 수프나 차에 넣으면 향이 좋아진다.',buy:8,sell:3},
+  rainbowdrop:{n:'무지개 물방울',d:'웰라가 분수에서 떠 온 물방울. 유리병 속에서 일곱 빛깔로 반짝인다.',keep:1},
   redleaf:{n:'제일 붉은 단풍잎',d:'웰라가 골라 준 단풍잎. 수프에 넣으면 가을 빛깔이 난다고 한다.',keep:1},
   moonshroom:{n:'달빛 버섯',d:'학교 뒤뜰 그늘에서 자란 버섯. 갓에 은은한 은빛이 돈다.',keep:1},
   silverbell:{n:'시나의 은방울',d:'시나 목에 걸려 있던 작은 은방울. 흔들면 맑고 가늘게 딸랑인다.',keep:1},
@@ -1325,41 +1332,69 @@ var LORE={
     {t:'광장의 단풍나무',l:['광장 분수의 단풍나무는 마법학교 첫 입학생들이 심었다고 해요. 해마다 가장 먼저 붉어져서, 그 나무가 물들면 학기가 시작됐다는 신호가 되죠.','올해도 제일 먼저 붉어졌답니다. 아멜리아가 오는 걸 알았나 봐요.']},
     {t:'꺼지지 않는 난로',l:['저 난로는 여관이 문을 연 날부터 한 번도 꺼진 적이 없단다. 불씨를 다음 날로 옮기는 게 우리 집안의 일이에요.','어느 추운 밤, 길 잃은 마법사가 저 불빛을 보고 찾아온 적도 있어요. 그 사람은 지금도 가끔 엽서를 보내 준단다.']},
     {t:'선술집의 수프',l:['건너편 선술집 브란은 말수가 적지만 수프만큼은 마을에서 제일이에요. 따뜻한 걸 말 대신 건네는 사람이거든요.','가끔 우리 여관 손님도 몰래 그 수프를 먹으러 간답니다. 나는 모르는 척하지만요.']},
-    {t:'벽의 엽서들',l:['이 여관 손님들은 대부분 학교 입학생이나 졸업생이란다. 졸업하고 떠난 아이들이 가끔 엽서를 보내 줘요.','벽에 붙은 엽서가 보이죠? 아멜리아도 언젠가 한 장 보내 줄래요?']}],
+    {t:'벽의 엽서들',l:['이 여관 손님들은 대부분 학교 입학생이나 졸업생이란다. 졸업하고 떠난 아이들이 가끔 엽서를 보내 줘요.','벽에 붙은 엽서가 보이죠? 아멜리아도 언젠가 한 장 보내 줄래요?']},
+    {t:'창가의 화분',l:['다락방 창가 화분 말이에요, 그건 처음 우리 여관에 묵었던 학생이 두고 간 거란다.','물은 사흘에 한 번이면 돼요. 아멜리아가 맡아 주면 그 애도 기뻐할 거예요.']},
+    {t:'우유 데우는 법',l:['우유는 끓기 직전에 불을 꺼야 해요. 그러면 위에 얇은 막이 안 생긴단다.','브란은 꿀을 넣고, 나는 계피를 조금 넣어요. 아멜리아는 어느 쪽이 좋아요?']}
+  ],
   bran:[
     {t:'수프의 비밀',l:['…수프 육수에는 별빛 차 찌꺼기를 아주 조금 넣어요. 말하면 안 되는 비밀인데.','…아멜리아니까 말해 주는 겁니다. 웰라한테는 말하지 마요. 다 마셔 버리니까.']},
     {t:'404라는 이름',l:['…상점 쪽 카페 이름이 404인 건 알죠. 웰라가 메뉴판 한 칸을 잘못 적어서 생긴 이름이라고 하더군요.','…덕분에 그 없는 메뉴를 시키는 손님이 생겼다던데. 웰라는 그때마다 진땀을 흘린대요.']},
     {t:'장작 소리',l:['…난 장작 타는 소리를 들으면 마음이 풀려요. 소리가 평소보다 커지면 날씨가 바뀐다는 뜻이고요.','…오늘 밤은 조용하네요. 좋은 밤이에요.']},
-    {t:'비어 있는 자리',l:['…저 구석 자리는 늘 비워 둬요. 오래전부터 매일 같은 시간에 오던 손님의 자리죠.','…언젠가 돌아올 거라고 생각해서 치우지 않아요. …아니, 그냥 습관이에요.']}],
+    {t:'비어 있는 자리',l:['…저 구석 자리는 늘 비워 둬요. 오래전부터 매일 같은 시간에 오던 손님의 자리죠.','…언젠가 돌아올 거라고 생각해서 치우지 않아요. …아니, 그냥 습관이에요.']},
+    {t:'새벽의 빵',l:['…빵은 해 뜨기 전에 구워요. 그 시간엔 마을이 조용해서 반죽이 잘 부풀거든요.','…가끔 시나가 창틀에서 지켜봐요. 냄새 때문인지, 온기 때문인지는 모르겠지만.']},
+    {t:'나무 숟가락',l:['…카운터 뒤에 걸린 나무 숟가락들은 제가 깎은 거예요. 단골손님 이름을 하나씩 새겼죠.','…아멜리아 것도 하나 깎는 중이에요. 아직은 비밀이에요.']},
+    {t:'비 오는 날의 선술집',l:['…비 오는 날엔 손님이 더 많아요. 다들 젖은 망토를 난로 앞에 걸어 두고 가죠.','…그런 날은 수프를 한 솥 더 끓여요. 비 냄새랑 수프 냄새가 섞이면, 그게 가을이에요.']}
+  ],
   wella:[
     {t:'구름 폭발 사건',l:['저 작년에 상점 천장에 포션으로 구름을 만든 적이 있어요! 하하!','알레센도 님이 사흘 동안 장부를 우산 쓰고 쓰셨대요. 지금도 그 얘기만 나오면 조용히 웃으세요, 하하!']},
     {t:'주머니 속 사탕',l:['저 가끔 주머니에 사탕이 들어 있어요. 누가 넣었는지는 몰라요, 하하!','시나는 스승님이 넣으신 거라고 하는데… 에이, 그 스승님이 그러실 리가요! …그렇죠? 하하!']},
     {t:'빗자루 속도',l:['빗자루로 광장을 한 바퀴 도는 데 지난주엔 열 숨이었는데 오늘은 여덟 숨이에요! 하하!','시나는 아홉 숨이래요. …자기가 세어 놓고 왜 화를 내는지 모르겠어요, 하하!']},
     {t:'시나를 만난 날',l:['시나는 숲에서 만났어요. 비 오는 날 상자 속에서 "…시끄럽다냥" 하길래 고양이가 말하는 줄 알고 놀랐죠, 하하!','지금은 같은 집에 살아요. 우유는 언제나 시나 몫이 먼저예요!']},
-    {t:'수확 등불제',l:['시월 중순에 수확 등불제가 열려요! 마을 사람들이 등불을 하나씩 들고 광장에 모여요.','저는 작년에 등불을 놓쳐서 분수에 빠뜨렸어요, 하하! 올해는 아멜리아 님이랑 같이 들고 싶어요!']}],
+    {t:'수확 등불제',l:['시월 중순에 수확 등불제가 열려요! 마을 사람들이 등불을 하나씩 들고 광장에 모여요.','저는 작년에 등불을 놓쳐서 분수에 빠뜨렸어요, 하하! 올해는 아멜리아 님이랑 같이 들고 싶어요!']},
+    {t:'첫 마법',l:['제 첫 마법은 촛불이었어요! …사실 세 번 실패하고 네 번째에 앞머리를 태웠죠, 하하!','스승님이 그날 "불꽃이 너를 꽤 좋아하는구나" 하셨어요. 칭찬 맞죠?']},
+    {t:'404번째 메뉴',l:['카페 메뉴판, 제가 적은 거 아세요? 한 칸 비워 둔 게 404번째 메뉴래요, 하하!','알레센도 님은 "없는 메뉴를 찾는 손님도 손님이에요" 하시면서 그대로 두셨어요.']}
+  ],
   ales:[
     {t:'장부에 적는 것',l:['장부는 골드만 적는 게 아니에요. 누가 어떤 날 어떤 차를 샀는지도 적어 두죠.','그 사람이 오래 지나 다시 찾아왔을 때, 기억해 주고 싶어서요.']},
     {t:'1482년',l:['이 가게는 1482년부터 이 자리에 있어요. 간판 밑의 숫자는 처음 문을 연 해랍니다.','지금까지 장부는 한 권도 버린 적이 없어요. 낡으면 새 책이 옆에 앉을 뿐이죠.']},
     {t:'장부 위의 낙서',l:['웰라는 가끔 장부에 낙서를 해요. 꾸지람을 해야 하는데…','이상하게도 그 낙서가 있는 쪽이 장부를 더 환하게 만들더군요. 비밀로 해 주세요.']},
-    {t:'조용한 오후',l:['손님이 없는 오후 두 시쯤이 가장 좋아요. 먼지가 햇빛 속에서 천천히 가라앉는 걸 보고 있으면,','시간이 장부 위에 살며시 앉는 것 같거든요.']}],
+    {t:'조용한 오후',l:['손님이 없는 오후 두 시쯤이 가장 좋아요. 먼지가 햇빛 속에서 천천히 가라앉는 걸 보고 있으면,','시간이 장부 위에 살며시 앉는 것 같거든요.']},
+    {t:'잉크의 색',l:['장부 잉크는 계절마다 바꿔요. 가을에는 단풍잎을 우려 만든 붉은 갈색이죠.','아멜리아, 나중에 장부를 넘겨 보면 계절이 보일 거예요.']},
+    {t:'마음의 무게',l:['물건을 팔 때는 무게만이 아니라 마음도 같이 달아요.','오래 쓰던 물건을 팔러 온 손님께는, 조금 더 천천히 값을 말씀드리죠.']},
+    {t:'카운터 밑 우산',l:['구름 사건 뒤로 카운터 밑에 우산을 하나 두고 있어요.','쓸 일이 없으면 좋겠지만… 웰라가 들어올 때면 손이 저절로 그쪽으로 가요.']}
+  ],
   owl:[
     {t:'밤의 장부',l:['낮에는 알레센도가 쓰고, 밤의 장부는 내가 쓴다네.','가게에 들어온 별빛의 수까지 적어 둔다네. 호오…']},
     {t:'오래된 약속',l:['이 가게에는 지켜야 할 약속이 몇 가지 있다네.','가장 오래된 것은, 맡겨진 물건은 주인이 올 때까지 돌려주지 않는다는 거지. 호오…']},
-    {t:'첫 등불',l:['광장의 첫 등불은 이 가게 지붕에서 불붙은 것이라네.','언젠가 그 얘기를 들려줄 날이 오겠지. 호오…']}],
+    {t:'첫 등불',l:['광장의 첫 등불은 이 가게 지붕에서 불붙은 것이라네.','언젠가 그 얘기를 들려줄 날이 오겠지. 호오…']},
+    {t:'별을 세는 일',l:['밤마다 창밖 별을 세어 장부에 적는다네.','어제보다 하나 적으면, 누군가 소원을 빌어 간 거지. 호오…']},
+    {t:'밤손님',l:['밤에 오는 손님은 대개 잠이 오지 않는 사람들이라네.','그럴 땐 물건보다 따뜻한 차 한 잔을 권하지. 그건 장부에 적지 않는다네.']},
+    {t:'깃털 펜',l:['카운터 위 깃털 펜은 내 깃털로 만든 것이라네.','낮에는 알레센도가 그걸로 장부를 쓰지. 낮과 밤이 같은 펜으로 이어진다네. 호오…']}
+  ],
   master:[
     {t:'교실의 초',l:['맨 앞줄 왼쪽 책상의 초는 학교가 세워진 날부터 있던 초다.','꺼지면 다시 붙이면 된다. 꺼졌다고 해서 잘못한 것은 아니다.']},
     {t:'백아흔한 계단',l:['학교 앞 계단은 백아흔한 단이다. 올라올 때마다 단 수가 다르게 느껴진다면,','그건 계단이 아니라 네 마음이 달라졌기 때문이지.']},
-    {t:'저울의 규칙',l:['저울 없이 재료를 재면 실패한다. 마법도 마찬가지다.','서두르지 말고 재 보아라. …그래, 오늘은 표정이 나쁘지 않구나.']}],
+    {t:'저울의 규칙',l:['저울 없이 재료를 재면 실패한다. 마법도 마찬가지다.','서두르지 말고 재 보아라. …그래, 오늘은 표정이 나쁘지 않구나.']},
+    {t:'칠판의 별',l:['칠판 구석의 별 그림은 지우지 않는다. 몇 해 전 학생이 그린 것이다.','…잘 그린 그림은 아니다. 그래도 지울 이유도 없지.']},
+    {t:'실패의 공책',l:['내 서랍에는 실패한 주문만 적은 공책이 있다.','성공은 한 줄이면 되지만, 실패는 쓸 게 많다. 그게 더 쓸모 있다.']},
+    {t:'가을 수업',l:['가을에는 마법이 잘 든다. 공기가 맑고, 마음이 가라앉기 쉬우니까.','…그러니 지금 열심히 해 둬라. 겨울은 생각보다 빨리 온다.']}
+  ],
   sina:[
     {t:'난로 옆 자리',l:['…난로 옆 자리는 내 거다냥. …웰라가 앉으면 비켜 줄 때도 있다냥. …가끔이다냥.']},
     {t:'지붕 위의 순서',l:['…지붕 위에서 보면 마을 등불이 켜지는 순서가 있다냥. …여관, 선술집, 그다음이 학교다냥.','…같이 볼래냥? …아니, 혼자 볼 거다냥.']},
-    {t:'일곱 번',l:['…웰라가 폭발시킨 포션은 일곱 번이다냥. …내가 셌다냥.','…세고 싶어서 센 건 아니다냥. 소리가 시끄러워서 센 거다냥.']}]
+    {t:'일곱 번',l:['…웰라가 폭발시킨 포션은 일곱 번이다냥. …내가 셌다냥.','…세고 싶어서 센 건 아니다냥. 소리가 시끄러워서 센 거다냥.']},
+    {t:'오후 세 시',l:['…분수 가장자리는 오후 세 시에 제일 따뜻하다냥. …그 시간엔 비켜라냥.']},
+    {t:'꼬리의 말',l:['…꼬리를 탁탁 치는 건 기분 나쁘다는 뜻이 아니다냥. …생각 중이라는 뜻이다냥.','…대부분은 기분 나쁜 거다냥.']},
+    {t:'은빛 지붕',l:['…달이 밝은 밤엔 지붕 위가 은색이 된다냥. …그날은 마법이 조금 더 잘 된다냥.','…웰라한텐 말하지 마라냥. 또 지붕에 올라온다냥.']}
+  ]
 };
 function loreF(){if(!S.lore)S.lore={};if(!S.loreDay)S.loreDay={};return S.lore}
 function loreCount(){loreF();var n=0;Object.keys(LORE).forEach(function(k){LORE[k].forEach(function(e,i){if(S.lore[k+i])n++})});return n}
 function loreTotal(){var n=0;Object.keys(LORE).forEach(function(k){n+=LORE[k].length});return n}
 function tellLore(npc,after){
   var L=LORE[npc];if(!L)return false;loreF();
+  var dv=dayEv(),dk=S.cal.m+'-'+S.cal.d+npc;if(!S.evHeard)S.evHeard={};
+  if(dv&&dv.l[npc]&&!S.evHeard[dk]){S.evHeard[dk]=1;var sp0=LORE_SPK[npc],o0={n:sp0.n,t:dv.l[npc]};if(sp0.p)o0.p=sp0.p;say([o0],{done:function(){autoSave();if(after)after()}});return true}
   if(S.loreDay[npc]===S.day)return false;
   var i=0;while(i<L.length&&S.lore[npc+i])i++;
   if(i>=L.length)return false;
@@ -1468,8 +1503,92 @@ function soupJudge(){
        B_('…아멜리아 덕분이에요. 상금은 반씩 나눠요.'),
        B_('…그리고 수프에 이름을 붙여야 한대요. …\'아멜리아의 가을 수프\'. 어때요.'),
        '(브란이 아주 조금, 웃은 것 같다.)'],
-    {done:function(){S.autumnSoup=true;giveItem('soup',2);addXp('flame');addGold(50,'브란의 가을 수프 대회');qDone('soup')}});
+    {done:function(){S.autumnSoup=true;S.soupDay=S.day;giveItem('soup',2);addXp('flame');addGold(50,'브란의 가을 수프 대회');qDone('soup')}});
 }
+/* 이야기 4편: 웰라의 구름 소동 */
+function cloudReady(){return !S.q.cloud&&S.q.soup&&S.q.soup.st==='done'&&S.day>(S.soupDay||0)}
+var WL_=function(t){return {n:'웰라',p:'wella',t:t}};
+function cloudStart(){
+  say(['(광장 하늘에 작은 회색 구름 하나가 낮게 떠 있다. 구름 아래로만 보슬비가 내린다.)',
+       WL_('아멜리아 님! 큰일 났어요… 아니, 작은일 났어요! 하하… 하…'),
+       WL_('날씨 포션을 연습하다가 병을 떨어뜨렸는데, 구름이 생겨 버렸어요. 작년 상점 천장 때보다는 작지만요!'),
+       WL_('이대로 두면 광장 단풍잎이 다 젖어 버려요. 알레센도 님은 작년에 구름을 어떻게 치우셨더라…')],
+    {choices:[{label:'같이 치워 볼게요',run:function(){say([WL_('고마워요! 저는 구름이 도망 못 가게 여기서 지키고 있을게요. …우산 쓰고요, 하하!')],{done:function(){qStep('cloud','ask')}})}},{label:'나중에요'}]});
+}
+function cloudAsk(owl){
+  var L=owl?[{n:'올빼미',t:'호오… 구름이 길을 잃었구먼. 작년 그 소동이 생각나는군.'},{n:'올빼미',t:'구름은 바람으로 한데 모으고, 물길을 열어 주면 제 발로 내려온다네. 광장이라면 분수가 좋겠지. 호오…'}]
+    :[{n:'알레센도',p:'alesendo',t:'구름 말씀이군요. …작년 일이 생각나네요. 사흘 동안 우산을 쓰고 장부를 썼거든요.'},{n:'알레센도',p:'alesendo',t:'구름은 바람으로 한데 모으고, 물이 갈 곳을 열어 주면 스스로 내려와요. 광장이라면 분수가 좋겠네요.'},{n:'알레센도',p:'alesendo',t:'아멜리아, 바람결로 구름을 분수 위로 모은 다음, 물결로 빗물을 분수에 담아 보세요.'}];
+  say(L,{done:function(){qStep('cloud','gather');autoSave()}});
+}
+function cloudFountain(){
+  if(qActive('cloud','gather')){
+    say(['(구름이 단풍나무 둘레를 빙글빙글 맴돈다.)','바람결로 흩어진 바람을 모아, 구름을 분수 위로 밀어 보자.'],{done:function(){
+      startMini('breeze','practice',function(){addXp('breeze');say(['(바람이 구름을 살살 밀어 분수 위로 모은다. 구름이 단풍나무 꼭대기에서 몸을 웅크린다.)'],{done:function(){qStep('cloud','rain');autoSave()}})})}});
+    return true;
+  }
+  if(qActive('cloud','rain')){
+    say(['분수 물이 구름을 올려다보며 찰랑인다.','물결로 빗물이 내려올 길을 열어 주자.'],{done:function(){
+      startMini('ripple','practice',function(){addXp('ripple');
+        say(['(구름이 쏴아— 소리를 내며 분수 속으로 비를 쏟는다. 마지막 한 방울까지.)','(구름이 사라진 자리에 작은 무지개가 걸렸다.)'],{done:function(){qStep('cloud','wella');autoSave()}})})}});
+    return true;
+  }
+  return false;
+}
+function cloudFinale(){
+  say([WL_('무지개다! 아멜리아 님, 보세요! 제 실수가 무지개가 됐어요, 하하!'),
+       '(시나가 분수 가장자리로 걸어와 젖은 앞발을 턴다.)',
+       {n:'시나',t:'…여덟 번째다냥.'},
+       WL_('네? 뭐가요?'),
+       {n:'시나',t:'…웰라가 포션 터뜨린 거다냥. …세고 싶어서 센 거 아니다냥.'},
+       WL_('하하… 그래도 이번 건 예뻤죠? 아멜리아 님, 정말 고마워요.'),
+       WL_('분수에서 무지개 물방울을 한 병 떠 왔어요. 이건 아멜리아 님 거예요!')],
+    {done:function(){S.cloudDone=true;giveItem('rainbowdrop');addXp('ripple');addGold(45,'웰라의 구름 소동');qDone('cloud')}});
+}
+/* 광장 구름·비·무지개 (도트) */
+function pixCloud(cx,cy,sz){
+  var g=8,blobs=[[0,0,1],[-.9,.25,.75],[.9,.2,.8],[-.4,-.45,.7],[.45,-.4,.65]],x,y,k,b,d;
+  for(y=-sz;y<=sz*.8;y+=g)for(x=-sz*1.8;x<=sz*1.8;x+=g){
+    var inside=false,top=1e9;
+    for(k=0;k<blobs.length;k++){b=blobs[k];d=Math.hypot(x-b[0]*sz,(y-b[1]*sz)*1.3);if(d<b[2]*sz){inside=true}}
+    if(!inside)continue;
+    ctx.fillStyle=y>sz*.35?'#8e94aa':(y<-sz*.45?'#eef0f6':'#c6cad8');
+    ctx.fillRect(Math.round((cx+x)/g)*g,Math.round((cy+y)/g)*g,g,g);
+  }
+}
+function pixRain(x0,y0,w,h,n,col){
+  var i,f=t/1000;ctx.fillStyle=col;
+  for(i=0;i<n;i++){var x=x0+((i*97)%w),y=y0+(((i*53)+f*900)%h);ctx.fillRect(Math.round(x/4)*4,Math.round(y/4)*4,4,16)}
+}
+function pixRainbow(cx,cy,r){
+  var cols=['#e8505a','#f29a3c','#f2d24c','#6ac46a','#4aa0e8','#8a6ad8'],i,a,n;
+  ctx.globalAlpha=.55;
+  for(i=0;i<cols.length;i++){ctx.fillStyle=cols[i];n=Math.ceil((r-i*10)*3.2);for(a=0;a<=n;a++){var an=Math.PI+Math.PI*a/n;ctx.fillRect(Math.round((cx+Math.cos(an)*(r-i*10))/8)*8,Math.round((cy+Math.sin(an)*(r-i*10))/8)*8,8,8)}}
+  ctx.globalAlpha=1;
+}
+function plazaWeather(){
+  var bob=Math.sin(t/900)*10;
+  if(qActive('cloud','ask')||qActive('cloud','gather')){var cx=820+Math.sin(t/2600)*60;pixCloud(cx,1000+bob,70);pixRain(cx-100,1060+bob,200,190,18,'rgba(159,200,240,.85)')}
+  else if(qActive('cloud','rain')){pixCloud(560,560+bob,80);pixRain(470,620+bob,180,120,14,'rgba(159,200,240,.85)')}
+  else if(qActive('cloud','wella')){
+    /* 단풍나무 잎 모양만큼 비워서 무지개가 나무 뒤에 걸린 것처럼 */
+    var tp=SC.plaza.fg[0].poly;ctx.save();ctx.beginPath();ctx.rect(0,0,W,H);tp.forEach(function(q,qi){qi?ctx.lineTo(q[0],q[1]):ctx.moveTo(q[0],q[1])});ctx.closePath();ctx.clip('evenodd');
+    pixRainbow(560,900,330);ctx.restore()}
+  var ev=dayEv();
+  if(ev&&ev.rain&&S.phase<3){ctx.fillStyle='rgba(40,50,80,.18)';ctx.fillRect(0,0,W,H);pixRain(0,0,W,H,90,'rgba(170,200,235,.55)')}
+}
+/* 날짜별 소소한 일: 아침 문구 + 그날 처음 말 걸면 듣는 한마디 */
+var DAYEV={
+  '9-6':{t:'가을비',rain:1,wake:['창밖에 가을비가 내린다. 지붕을 두드리는 빗소리가 기분 좋다.'],l:{orga:'비 오는 날엔 계단이 더 삐걱거린단다. 나무도 촉촉해져서 그래요.',bran:'…오늘은 수프를 한 솥 더 끓였어요. 비 오는 날이니까.',wella:'비 오는 날엔 빗자루가 무거워져요! 그래서 오늘은 걸어 다녀요, 하하!',sina:'…젖는 건 싫다냥. …그래도 광장은 내 자리다냥.'}},
+  '9-11':{t:'안개 낀 아침',wake:['아침 안개가 마을을 하얗게 덮었다. 학교 탑이 구름 위에 떠 있는 것 같다.'],l:{master:'안개 낀 날은 바람결이 잘 안 든다. 서두르지 마라.',ales:'안개 낀 날은 손님이 적어요. 대신 오시는 분과 이야기를 오래 나누죠, 아멜리아.',wella:'안개 속에서 빗자루 타다가 단풍나무에 부딪힐 뻔했어요, 하하!'}},
+  '9-17':{t:'보름달',wake:['오늘 밤은 보름달이 뜬다고 한다.'],l:{owl:'오늘은 보름이라네. 달빛이 장부까지 비추는 날이지. 호오…',sina:'…오늘 밤은 지붕 위가 은색이 된다냥. …보러 오든지 말든지다냥.',orga:'보름달 뜨는 밤엔 창문을 조금 열어 두렴. 달빛이 방을 데워 준단다.'}},
+  '9-22':{t:'추분',wake:['오늘은 낮과 밤의 길이가 같은 날이다.'],l:{master:'낮과 밤이 같은 날이다. 빛과 그림자도 오늘만큼은 사이가 좋지.',wella:'추분이에요! 오늘부터 밤이 길어지니까 등불을 더 많이 켜야 해요, 하하!',bran:'…오늘부터 저녁 장사를 조금 일찍 시작해요. 해가 빨리 지니까요.'}},
+  '9-27':{t:'두 번째 가을비',rain:1,wake:['또 가을비가 내린다. 오늘은 조금 더 차가운 비다.'],l:{orga:'젖은 망토는 난로 앞에 걸어 두렴. 감기 들면 큰일이에요.',bran:'…빗소리 들으면서 장작 패는 건 좋아요. 오늘은 조용히 지나가겠네요.',ales:'비 오는 날은 장부 종이가 눅눅해져요. 오늘은 잉크를 조금 진하게 탔답니다.'}},
+  '10-3':{t:'첫서리',wake:['창유리에 하얀 서리꽃이 피었다. 올가을 첫서리다.'],l:{orga:'첫서리가 내렸네요. 오늘부터 이불을 하나 더 꺼내 둘게요.',bran:'…서리 내린 날은 버섯이 달아져요. 오늘 수프는 그거예요.',sina:'…발이 시리다냥. …아무 말도 안 했다냥.'}},
+  '10-10':{t:'바람 부는 날',wake:['밤새 바람이 불어 광장에 낙엽이 수북하다.'],l:{wella:'오늘은 바람이 세서 빗자루 타기 딱 좋아요! …아, 스승님한텐 비밀이에요!',master:'바람 부는 날은 바람결을 연습하기 좋다. 다락방 창을 열어 봐라.',sina:'…낙엽이 자꾸 수염에 붙는다냥. …떼 주면 고맙다고는 안 한다냥.'}},
+  '10-25':{t:'늦가을 비',rain:1,wake:['늦가을 비가 조용히 내린다. 단풍잎이 길에 붙어 반짝인다.'],l:{orga:'비가 그치면 나무가 한꺼번에 잎을 떨군단다. 가을이 저물어 가요.',owl:'비 오는 밤엔 별을 셀 수 없지. 대신 빗소리를 세어 둔다네. 호오…',wella:'젖은 단풍잎은 책갈피로 만들면 더 선명해요! 하하, 주우러 가야겠다!'}},
+  '10-31':{t:'시월의 마지막 날',wake:['오늘은 시월의 마지막 날. 내일부터는 겨울 냄새가 날 것 같다.'],l:{orga:'시월도 끝이네요. 아멜리아가 온 지 벌써 두 달이에요.',ales:'오늘 장부의 마지막 줄은 아멜리아 이름으로 적어 둘게요.',master:'…두 달이 지났구나. 처음 왔을 때보다 불꽃이 차분해졌다.'}}
+};
+function dayEv(){return S&&S.cal?DAYEV[S.cal.m+'-'+S.cal.d]:null}
 function lightsOrga(){
   if(S.day<8)return false;
   if(!S.q.lights){
@@ -1504,6 +1623,9 @@ function sayOrga(){
 function sayWella(){
   if(!S.metWella){playCut('wellaMeet');return}
   if(qActive('bell','wella')){bellWella();return}
+  if(cloudReady()){cloudStart();return}
+  if(qActive('cloud','wella')){cloudFinale();return}
+  if(qActive('cloud')){say([WL_(qActive('cloud','ask')?'알레센도 님이라면 방법을 아실 거예요! 저는 구름 지키고 있을게요, 하하!':'구름이 아직 저기 있어요… 분수 쪽으로 잘 부탁해요, 아멜리아 님!')]);return}
   if(qActive('soup','gather')&&!hasItem('redleaf')){say([{n:'웰라',p:'wella',t:'단풍잎이요? 브란 님 수프에요?! 제 단풍잎이 수프에 들어간다니, 영광이에요, 하하!'},{n:'웰라',p:'wella',t:'책갈피 만들 때 제일 붉은 걸 하나 아껴 뒀거든요. 자요, 이거예요!'}],{done:function(){giveItem('redleaf');autoSave()}});return}
   if(qActive('bell','clues')||qActive('bell','wind')){say([{n:'웰라',p:'wella',t:'시나 방울이요? 저는 못 봤어요. 오늘은 제 빗자루가 왠지 딸랑거려서 기분이 좋은 것 말고는요, 하하!'}]);return}
   if(S.day>=8&&!S.q.leaves){
@@ -1833,7 +1955,7 @@ function magicSpot(key){
     case 'school.sdesk0':return learned('flame');
     case 'shop.flower':return learned('glow');
     case 'inn1.fire':return learned('whisper')||(B.got&&!bookHas(1)&&bookReady()&&S.phase>=2);
-    case 'plaza.fountain':return qActive('bell','wind')||learned('ripple')||(B.got&&!bookHas(2)&&bookReady()&&S.phase===1&&learned('breeze')&&magicLv('breeze')>=2);
+    case 'plaza.fountain':return qActive('bell','wind')||qActive('cloud','gather')||qActive('cloud','rain')||learned('ripple')||(B.got&&!bookHas(2)&&bookReady()&&S.phase===1&&learned('breeze')&&magicLv('breeze')>=2);
     case 'shop.counter':return bookP4ok();
     case 'attic.window':return learned('breeze')||bookP5ok();
     case 'school.shelf':return learned('shadow')||(B.got&&B.key&&!bookHas(3)&&bookReady());
@@ -2352,6 +2474,7 @@ function interact(o){
   if(ABSENT[key]&&!ABSENT[key][0].split('|').some(npcHere)){say([ABSENT[key][1]]);return}
   if(key==='inn1.fire'&&bookFire())return;
   if(key==='plaza.fountain'&&qActive('bell','wind')&&learned('breeze')){bellWind();return}
+  if(key==='plaza.fountain'&&cloudFountain())return;
   if(key==='plaza.fountain'&&bookFountain())return;
   if(key==='school.shelf'&&bookShelf())return;
   if(key==='shop.flower'&&qActive('lights','flower')&&learned('glow')){lightsFlower();return}
@@ -2392,7 +2515,7 @@ function interact(o){
     break;
   case 'plaza.wella':sayWella();break;
   case 'plaza.sina':saySina();break;
-  case 'shop.counter':if(qActive('lights','shop')&&(npcHere('owl')||npcHere('alesendo'))){lightsShop();break}if(bookP4ok()&&!npcHere('owl')&&npcHere('alesendo')){bookPage4();break}if(npcHere('owl'))sayOwl();else sayAlesendo();break;
+  case 'shop.counter':if(qActive('cloud','ask')&&(npcHere('owl')||npcHere('alesendo'))){cloudAsk(npcHere('owl'));break}if(qActive('lights','shop')&&(npcHere('owl')||npcHere('alesendo'))){lightsShop();break}if(bookP4ok()&&!npcHere('owl')&&npcHere('alesendo')){bookPage4();break}if(npcHere('owl'))sayOwl();else sayAlesendo();break;
   case 'inn1.stairs':
     if(!S.key)say(['먼저 카운터의 오르가 아주머니께 인사부터 하자.']);
     else say(['삐걱거리는 나무 계단이 위층으로 이어진다.','다락방으로 올라갈까?'],{choices:[{label:'올라간다',run:function(){
@@ -2443,9 +2566,10 @@ function wake(){
     say([['새소리와 함께 눈을 떴다. 창밖으로 따뜻한 아침 햇살이 스며든다.','잠에서 깼다. 창밖으로 한낮의 햇살이 환하게 들어온다.','잠에서 깼다. 창밖으로 노을이 번지고 있다.','잠에서 깼다. 창밖은 달빛이 고요하다.'][S.phase],'입학 첫날이야. 1층에 내려가 인사하고, 광장으로 가 보자.'],{done:function(){qStep('main','morning');autoSave()}});
   }else{
     var nx=S.lesson<2?(!S.metWella?'wella':'school'):(pendingLesson()||(festOn()?festStep():'free'));
-    var left=S.day<8||!bookF().ended||['lights','herb','leaves','bell','soup'].some(function(k){return !S.q[k]||S.q[k].st!=='done'});
+    var left=S.day<8||!bookF().ended||['lights','herb','leaves','bell','soup','cloud'].some(function(k){return !S.q[k]||S.q[k].st!=='done'});
     var nt=nx==='free'?['새로운 하루가 시작됐다.',left?'오늘은 마을을 마음껏 둘러보자.':'이야기의 다음 장은 아직 준비 중이에요. 마을을 마음껏 둘러보세요.']:['새로운 하루가 시작됐다.','오늘도 광장을 지나 학교로 가 보자.'];
     if(nx==='fest'||nx==='festwait'||nx==='festday')nt=festWake();
+    else{var dv=dayEv();if(dv)nt=[nt[0]].concat(dv.wake,nt.slice(1))}
     if(S.day===8)nt=nt.concat(['마을이 조금 익숙해졌다.','오늘부터는 마을 사람들의 부탁이 하나둘 들려오기 시작한다. 일지의 퀘스트 탭을 열어 보자.']);
     say(nt,{done:function(){qStep('main',nx);autoSave();bookMaybeIntro();bookEnding()}});
   }
