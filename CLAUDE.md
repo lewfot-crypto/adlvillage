@@ -44,7 +44,7 @@ python3 tools/playtest_late.py [스크린샷폴더]  # 5~10일차: 마법서 5�
 - 테스트 봇은 프로젝트 루트에서 실행 (현재 폴더의 game.html / game_dbg.html 사용).
 - 봇 주의: 연출(cut) 중에는 화면을 누르지 말 것. 대화창은 `mouse.click(280,880)`로 넘기고 선택지는 `#dlg .ch > *` 요소를 클릭. 미니게임은 `__g.mini()`로 얻은 M 에 `n=need, ok=true, fin=0.01` 로 성공 처리.
 - `pkill -f 스크립트이름` 은 자기 셸까지 죽일 수 있으니 쓰지 말 것.
-- 배포: GitHub 공개 저장소 https://github.com/lewfot-crypto/adlvillage (main 브랜치, GitHub Pages → https://lewfot-crypto.github.io/adlvillage/). 사용자는 폰에서 이 주소를 "홈 화면에 추가"해서 플레이한다. 빌드 후 index.html/sw.js 까지 커밋·푸시해야 폰에 반영됨(앱을 완전히 껐다 켜기). 예전 Artifact 링크(https://claude.ai/artifact/KmAe9zmoZ4Gb7mZN3Mf2sj)는 game.html 로 갱신 가능.
+- 배포: GitHub 공개 저장소 https://github.com/lewfot-crypto/adlvillage (main 브랜치, GitHub Pages → https://lewfot-crypto.github.io/adlvillage/). 사용자는 폰에서 이 주소를 "홈 화면에 추가"해서 플레이한다. 빌드 후 index.html/sw.js 까지 커밋·푸시해야 폰에 반영됨(앱을 완전히 껐다 켜기). 예전 Artifact 링크(https://claude.ai/artifact/KmAe9zmoZ4Gb7mZN3Mf2sj)는 game.html 로 갱신 가능. 클라우드 세션에서 미리보기는 game.html 을 Artifact 로 게시해서 제공(채팅 창에서 바로 플레이).
 
 ## 게임 구조 요약
 - 월드 1116x2000. 장면 SC.{attic, inn1, tavern, school, shop, plaza}. 상태 boot/title/play/dialog/trans/fade/menu/mini/cut.
@@ -69,6 +69,7 @@ python3 tools/playtest_late.py [스크린샷폴더]  # 5~10일차: 마법서 5�
 - 5~10일차 점검 완료(v0.41, `tools/playtest_late.py`): 마법서 1~5장·엔딩, 약초·단풍잎·사라진 가을 불빛 모두 오류 없이 진행. 분수 서는 자리 수정, 아침 문구 수정. 상점 404 네온 간판 → 나무 간판(`tools/patch_shop_sign.py`, 원본 `assets/shop_bg_orig.jpg`). 카페 이름 '404 DRINK BAR' 설정은 유지.
 - v0.42: 알레센도 스프라이트를 사용자의 예전 게임 도트(`source_images/alesendo_oldgame.jpg`)로 교체. `tools/make_alesendo.py`가 칸(약 21.7px) 단위로 다시 뽑아 6배로 키움. 옷 색은 바꾸지 말 것(사용자 요청, 파란 로브). 이전 그림은 `assets/npc_alesendo_old.png`. sc 1.16, 상점 dy 40(카운터에 허리 아래 가려짐). 초상화는 그대로(짙은 회색 옷), 웃는 초상화는 넣지 않기로 함.
 - v0.43: 이야기 2편 「시나의 잃어버린 방울」(퀘스트 id `bell`). 사라진 가을 불빛을 끝낸 **다음 날**부터(S.lightsDay) 광장 시나에게 말 걸면 시작 → 오르가·브란 단서(S.bl) → 광장 분수(단풍나무) 앞에서 바람결 미니게임 → 웰라 빗자루에 엉킨 은방울(silverbell) → 시나에게 돌려주기(40G). `tools/playtest_late.py` 에 포함.
+- 설정(왼쪽 위 메뉴) → 테스트 탭에 '미니게임 바로 해 보기'(devMini, 마법 6종, 진행·숙련도 영향 없음). 릴리스 전 테스트 탭 숨길 때 같이 숨김.
 - 완료된 최근 수정: 계단 오를 땐 왼쪽·내려갈 땐 오른쪽을 봄, 알레센도 초상화 배경 제거, 상점 NPC 카운터 겹침 수정, 첫 실행(터치 대기) 화면 꾸밈.
 - 임시 이미지(그림 생기면 교체): 시작 화면 배경 title_bg.jpg / 로고 title_logo.png, 다락방 배경(attic_bg), 마법스승 웃는 초상화, 올빼미.
 
