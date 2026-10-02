@@ -1,4 +1,4 @@
-const CACHE='adeline-0.47_데모-84a5114e';
+const CACHE='adeline-0.48_데모-253ce7fa';
 const FILES=['./','index.html','manifest.json','pwa/icon-192.png','pwa/icon-512.png','pwa/apple-touch-icon.png'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(FILES)));self.skipWaiting()});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
