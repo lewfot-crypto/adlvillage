@@ -44,7 +44,7 @@ body{
 .ptf{position:absolute; left:.9em; bottom:calc(100% + .9em); width:6.4em; height:8em; pointer-events:none}
 @keyframes bl{50%{opacity:0}}
 /* 상단 알림 */
-#toast{position:absolute; top:2%; left:50%; transform:translate(-50%,-10px); max-width:88%; padding:calc(var(--fw) + .1em) calc(var(--fw) + .6em); line-height:1.5; text-align:center; color:var(--ink); font-size:.95em; opacity:0; transition:opacity .45s, transform .45s; pointer-events:none; white-space:nowrap}
+#toast{position:absolute; z-index:9; top:2%; left:50%; transform:translate(-50%,-10px); max-width:88%; padding:calc(var(--fw) + .1em) calc(var(--fw) + .6em); line-height:1.5; text-align:center; color:var(--ink); font-size:.95em; opacity:0; transition:opacity .45s, transform .45s; pointer-events:none; white-space:nowrap}
 #toast.on{opacity:1; transform:translate(-50%,0)}
 #toast .tt{position:relative}
 #toast .tg{position:relative; color:var(--gold); font-size:.85em; display:block}

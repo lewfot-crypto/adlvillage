@@ -217,7 +217,7 @@ function sfx(name,a){
    ===================================================================== */
 var VERSION='0.44 데모';
 var CHANGES=[
-  '0.44  미니게임 6종을 도트 그림으로 새로 그림(펼친 마법책 판 + 양피지 제목 띠 + 금빛 보석 진행 표시, 빛은 점묘로 번짐). 대화창·설정·일지·상점 창을 나무 틀 + 양피지 바탕으로, 버튼·이름표·초상화 틀·상단 버튼·알림 창도 도트 틀로 교체',
+  '0.44  미니게임 6종을 도트 그림으로 새로 그림(펼친 마법책 판 + 양피지 제목 띠 + 금빛 보석 진행 표시, 빛은 점묘로 번짐). 대화창·설정·일지·상점 창을 나무 틀 + 양피지 바탕으로, 버튼·이름표·초상화 틀·상단 버튼·알림 창도 도트 틀로 교체. 테스트 탭의 미니게임 \'해 보기\'가 타이틀 화면에서 아무 반응이 없던 문제 수정(이제 타이틀에서도 바로 시작, 알림이 설정 창 뒤에 가려지던 문제도 수정)',
   '0.43  이야기 2편 \'시나의 잃어버린 방울\' 추가(사라진 가을 불빛을 끝낸 다음 날부터, 광장의 시나 → 오르가·브란 단서 → 광장 단풍나무 앞에서 바람결 → 웰라의 빗자루 → 시나에게 돌려주기). 설정의 테스트 탭에 \'미니게임 바로 해 보기\' 버튼 6개 추가(기록에 남지 않음)',
   '0.42  홈 화면에 추가해 앱처럼 플레이할 수 있게 준비(아이콘·전체 화면·오프라인 실행). 알레센도 서 있는 그림을 예전 게임의 도트 그림으로 교체(옷 색 그대로, 아멜리아와 같은 귀여운 비율). 상점에서는 카운터 뒤에 허리까지 보이게 위치 조정',
   '0.41  5~10일차 직접 플레이 점검(마법서 5장·엔딩·부탁 3개 모두 통과). 분수를 누르면 분수 뒤 가로등 위에 서던 문제 수정(이제 분수 앞에 섬), 아직 할 일이 남았는데 아침마다 \'이야기의 다음 장은 준비 중\'이 나오던 문구 수정. 상점 벽의 \'404\' 네온 간판을 초승달·별 문양 나무 간판으로 교체(구석에 작게 404 새김, 카페 이름 설정은 그대로)',
@@ -651,8 +651,17 @@ function calAdd(n){
 function devSkip(n){if(!S||!S.started){showToast('먼저 게임을 시작해 주세요','',2200);return}
   S.day+=n;calAdd(n);festMissCheck();syncInv();if(festOn()){var st=festStep();if(['free','explore3'].indexOf(S.q.main&&S.q.main.st)>=0||(S.q.main&&['fest','festwait','festday'].indexOf(S.q.main.st)>=0)){S.q.main={st:st};S.goal=qText('main',st)}}
   autoSave();closeSettings();updateHud();showToast('날짜 건너뛰기',calText(),3200)}
-function devMini(sp){if(!S||!S.started||prevState!=='play'){showToast('먼저 게임을 시작해 주세요','',2200);return}
-  closeSettings();startMini(sp,'practice',function(){showToast('미니게임 끝',SPELLS[sp].name+' 연습 (기록에는 남지 않아요)',2600)})}
+var devMiniQ=null;
+function devMini(sp){
+  var fromTitle=prevState==='title';
+  closeSettings();
+  if(fromTitle){hideTitle();startMini(sp,'practice',function(){showToast('미니게임 끝',SPELLS[sp].name+' 연습',2200);showTitle()});return}
+  devMiniQ=sp;
+}
+function devMiniTick(){
+  if(!devMiniQ||state!=='play')return;var sp=devMiniQ;devMiniQ=null;
+  startMini(sp,'practice',function(){showToast('미니게임 끝',SPELLS[sp].name+' 연습 (기록에는 남지 않아요)',2600)});
+}
 function devTo(m,d){if(!S||!S.started){showToast('먼저 게임을 시작해 주세요','',2200);return}
   var n=0,c={y:S.cal.y,m:S.cal.m,d:S.cal.d};while(!(c.m===m&&c.d===d)&&n<400){c.d++;if(c.d>monthLen(c.y,c.m)){c.d=1;c.m++;if(c.m>12){c.m=1;c.y++}}n++}
   if(n>=400){showToast('이미 지난 날짜예요','',2200);return}devSkip(n)}
@@ -2559,6 +2568,7 @@ var last=performance.now();
 function loop(now){
   var dt=Math.min(0.05,(now-last)/1000);last=now;t=now;
   if(now-lastSync>1000){lastSync=now;if(state==='play')syncPhase()}
+  devMiniTick();
   update(dt);
   render(state==='play'?findTarget():null);
   requestAnimationFrame(loop);
