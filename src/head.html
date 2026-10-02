@@ -102,17 +102,17 @@ body{
 #set .sh{position:relative; display:flex; align-items:center; justify-content:space-between; margin-bottom:.6em}
 #set .sh b{font-size:1.15em; color:var(--gold); font-weight:normal; text-shadow:0 var(--px) 0 #f6e7c2}
 #set .tabs{position:relative; display:flex; gap:.4em; flex-wrap:wrap; margin-bottom:.7em}
-#set .body{position:relative; flex:1; overflow-y:auto; padding-right:.3em; scrollbar-width:thin; scrollbar-color:var(--edge2) transparent; touch-action:pan-y}
+#set .body{position:relative; flex:1; word-break:keep-all; overflow-wrap:anywhere; overflow-y:auto; padding-right:.3em; scrollbar-width:thin; scrollbar-color:var(--edge2) transparent; touch-action:pan-y}
 #set .row{display:flex; align-items:center; justify-content:space-between; gap:.8em; padding:.5em 0; border-bottom:var(--px) dashed #b8955e}
 #set .row .lb{flex:1; min-width:0}
-#set .row .lb small{display:block; color:var(--muted); font-size:.8em; line-height:1.4}
+#set .row .lb small{display:block; margin-top:.3em; color:var(--muted); font-size:.8em; line-height:1.75; letter-spacing:.04em}
 #set .ctl{display:flex; gap:.35em; align-items:center; flex-wrap:wrap; justify-content:flex-end}
-#set .note{color:var(--muted); font-size:.85em; padding:.5em 0; white-space:pre-wrap}
+#set .note{color:var(--muted); font-size:.85em; padding:.5em 0; white-space:pre-wrap; line-height:1.75; letter-spacing:.03em}
 #set .logp{padding:.6em 0 .2em}
 #set .logp .lh{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:.4em; padding-bottom:.3em; border-bottom:var(--px) solid #b8955e}
 #set .logp .lh b{font-weight:normal; color:var(--gold)}
 #set .logp .lh span{color:var(--muted); font-size:.8em}
-#set .logp .lt{min-height:9em; font-size:.88em; line-height:1.6; white-space:pre-wrap; touch-action:pan-y}
+#set .logp .lt{min-height:9em; font-size:.88em; line-height:1.75; letter-spacing:.03em; white-space:pre-wrap; touch-action:pan-y}
 #set .logp .ln{display:flex; justify-content:space-between; gap:.5em; margin-top:.7em}
 #set .logp .ln .pbtn[disabled]{opacity:.35; pointer-events:none}
 #set .ft{position:relative; margin-top:.6em; color:var(--muted); font-size:.8em; text-align:center}

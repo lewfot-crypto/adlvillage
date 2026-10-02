@@ -1,4 +1,4 @@
-"""5일차 이후 점검: 마법서 1~5장 + 엔딩, 8일차 부탁(약초·단풍잎) + 이야기 1편(사라진 가을 불빛) + 2편(시나의 잃어버린 방울) + 3편(브란의 가을 수프 대회) + 4편(웰라의 구름 소동) + 5편(첫 등불의 약속).
+"""5일차 이후 점검: 마법서 1~5장 + 엔딩, 8일차 부탁(약초·단풍잎) + 이야기 1편(사라진 가을 불빛) + 2편(시나의 잃어버린 방울) + 3편(브란의 가을 수프 대회) + 4편(웰라의 구름 소동) + 5편(첫 등불의 약속) + 6편(스승의 첫 초) + 작은 부탁 3개(우유·잉크·고맙다냥).
 사용: python3 tools/playtest_late.py [스크린샷폴더]   (playtest_story 와 같은 방식으로 5일차까지 먼저 진행)"""
 import asyncio,os,sys,json
 from playwright.async_api import async_playwright
@@ -34,6 +34,8 @@ async def main():
                         ch=await ev("[...document.querySelectorAll('#dlg .ch > *')].map(x=>x.textContent)")
                     if ch: await pg.wait_for_timeout(350); await ev("document.querySelectorAll('#dlg .ch > *')[%d].click()"%min(pick,len(ch)-1))
                     else: await pg.mouse.click(280,880)
+                elif st=='menu':
+                    await pg.keyboard.press('Escape')
                 elif st=='mini':
                     await ev("(()=>{const M=__g.mini();if(M){M.n=M.need;M.ok=true;M.fin=0.01}})()")
                 await pg.wait_for_timeout(300)
@@ -53,7 +55,7 @@ async def main():
         async def sleep():
             await go('attic'); await phase(3); await ia('bed')
         async def info():
-            return json.loads(await ev("(()=>{const s=__g.S(),B=s.book||{};return JSON.stringify({day:s.day,cal:s.cal.m+'/'+s.cal.d,main:s.q.main&&s.q.main.st,herb:s.q.herb&&s.q.herb.st,leaves:s.q.leaves&&s.q.leaves.st,lights:s.q.lights&&s.q.lights.st,bell:s.q.bell&&s.q.bell.st,soup:s.q.soup&&s.q.soup.st,cloud:s.q.cloud&&s.q.cloud.st,promise:s.q.promise&&s.q.promise.st,cloudDay:s.cloudDay||0,lamp:!!s.promiseLamp,soupDay:s.soupDay||0,bellDay:s.bellDay||0,book:Object.keys(B.pg||{}),bkey:B.key,end:B.ended,gold:s.gold,inv:s.inv,magic:s.magic})})()"))
+            return json.loads(await ev("(()=>{const s=__g.S(),B=s.book||{};return JSON.stringify({day:s.day,cal:s.cal.m+'/'+s.cal.d,main:s.q.main&&s.q.main.st,herb:s.q.herb&&s.q.herb.st,leaves:s.q.leaves&&s.q.leaves.st,lights:s.q.lights&&s.q.lights.st,bell:s.q.bell&&s.q.bell.st,soup:s.q.soup&&s.q.soup.st,cloud:s.q.cloud&&s.q.cloud.st,promise:s.q.promise&&s.q.promise.st,cloudDay:s.cloudDay||0,lamp:!!s.promiseLamp,promiseDay:s.promiseDay||0,fc:s.q.firstcandle&&s.q.firstcandle.st,milk:s.q.milk&&s.q.milk.st,ink:s.q.ink&&s.q.ink.st,thanks:s.q.thanks&&s.q.thanks.st,soupDay:s.soupDay||0,bellDay:s.bellDay||0,book:Object.keys(B.pg||{}),bkey:B.key,end:B.ended,gold:s.gold,inv:s.inv,magic:s.magic})})()"))
         # ---- 1~5일차 빠르게 (playtest_story 와 같은 경로)
         async def walkout():
             await ev("__g.set('inn1',500,1300,'down')"); await pg.keyboard.down('ArrowDown'); await pg.wait_for_timeout(2500)
@@ -81,8 +83,8 @@ async def main():
             else: print('unhandled',m); break
         print('## 5일차 도착',await info(),flush=True)
         # ---- 5일차부터: 마법서 + 8일차 부탁
-        for k in range(16):
-            i=await info(); print('#',i['day'],'일차',i['cal'],{x:i.get(x) for x in('main','herb','leaves','lights','bell','soup','cloud','promise','book','bkey','gold')},flush=True)
+        for k in range(18):
+            i=await info(); print('#',i['day'],'일차',i['cal'],{x:i.get(x) for x in('main','herb','leaves','lights','bell','soup','cloud','promise','fc','milk','ink','thanks','book','bkey','gold')},flush=True)
             B=i['book']
             if '1' not in B:
                 await at('inn1',2); await ia('fire',shoot='book1')
@@ -182,8 +184,38 @@ async def main():
                     await ev("__g.set('tavern',520,1500,'down')"); await pg.wait_for_timeout(700); await shot('promise_lamp')
                     await ev("__g.set('tavern',870,1700,'up')"); await pg.wait_for_timeout(700); await shot('promise_lamp_behind')
                     await ev("__g.set('tavern',870,1830,'up')"); await pg.wait_for_timeout(700); await shot('promise_lamp_front')
+                # 이야기 6편: 스승의 첫 초 (5편 다음 날부터)
+                i=await info()
+                if i.get('promise')=='done' and not i.get('fc') and i['day']>i.get('promiseDay',0): await at('plaza',1); await ia('wella',shoot='fc_start')
+                i=await info()
+                if i.get('fc')=='ask': await at('school',1); await ia('teacher',shoot='fc_master')
+                i=await info()
+                if i.get('fc')=='note': await at('shop',1); await ia('counter',shoot='fc_ales')
+                i=await info()
+                if i.get('fc')=='shadow':
+                    await at('school',1); await ia('shelf')          # 낮: 그림자가 짧다는 안내만
+                    await at('school',2); await ia('shelf',shoot='fc_shelf')
+                i=await info()
+                if i.get('fc')=='light': await at('school',2); await ia('teacher',shoot='fc_light')
+                # 작은 부탁 3개 (진행 중인 이야기가 없을 때)
+                i=await info()
+                if i.get('fc')=='done' and not i.get('milk'): await at('inn1',1); await ia('counter',shoot='milk_start')
+                i=await info()
+                if i.get('milk')=='warm': await at('inn1',1); await ia('fire',shoot='milk_warm'); await shot('inn_cards')
+                i=await info()
+                if i.get('fc')=='done' and not i.get('ink'): await at('shop',1); await ia('counter',shoot='ink_start')
+                i=await info()
+                if i.get('ink')=='leaf': await at('plaza',1); await ia('leafA')
+                i=await info()
+                if i.get('ink')=='back': await at('shop',1); await ia('counter',shoot='ink_back')
+                i=await info()
+                if i.get('fc')=='done' and not i.get('thanks'): await at('plaza',1); await ia('sina',shoot='thanks_start')
+                i=await info()
+                if i.get('thanks')=='whisper': await at('plaza',1); await ia('wella',shoot='thanks_whisper')
+                i=await info()
+                if i.get('thanks')=='back': await at('plaza',1); await ia('sina',shoot='thanks_back')
             i=await info()
-            if i.get('end') and i.get('promise')=='done': print('## 엔딩·이야기 2·3·4·5편 확인'); break
+            if i.get('end') and i.get('thanks')=='done' and i.get('milk')=='done' and i.get('ink')=='done': print('## 엔딩·이야기 2~6편·작은 부탁 확인'); break
             await sleep(); await pg.wait_for_timeout(800); await settle('wake',shoot='wake%d'%(i['day']+1))
         print('## 끝',await info()); print('ERRORS',errs); await b.close()
 asyncio.run(main())
