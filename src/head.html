@@ -38,7 +38,7 @@ body{
 .pbtn.sel{border-image-source:var(--ui-plate-sel); color:#fff3d0}
 .pbtn.sel::after{content:'◀'; position:absolute; right:.35em; top:50%; transform:translateY(-50%) scale(.6); color:#ffe39a}
 .pbtn.sel{padding-left:1.5em; padding-right:1.5em}/* ◀ 자리를 양쪽 같게 둬서 글자가 가운데에 오게 */
-#pt{position:absolute; z-index:2; right:1em; bottom:calc(100% - var(--px)*2); width:calc(var(--fs0,15px)*8.6); height:auto; image-rendering:auto; pointer-events:none; box-sizing:content-box;
+#pt{position:absolute; z-index:2; right:1em; bottom:calc(100% + var(--px));/* 대화창 위 테두리와 겹치지 않게 한 칸 띄움 */ width:calc(var(--fs0,15px)*8.6); height:auto; image-rendering:auto; pointer-events:none; box-sizing:content-box;
   border-style:solid; border-width:calc(var(--px)*4); border-image:var(--ui-plate-gold) 4 / calc(var(--px)*4) stretch;
   background:radial-gradient(ellipse at 50% 35%,#5a4060 0,#2e2236 55%,#1c1424 100%); background-clip:padding-box; filter:drop-shadow(0 var(--px) 0 rgba(0,0,0,.5))}
 #pt[hidden]{display:none}
