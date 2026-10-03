@@ -50,6 +50,7 @@ def pj(n):
     if n=="bran":
         im=im.crop((30,30,360,402)); im=im.resize((190,214),Image.LANCZOS)
     elif n in("orga","amelia"): im=im.resize((190,240),Image.LANCZOS)
+    elif n=="alesendo": im=im.resize((190,246),Image.LANCZOS)   # 도트 2배 원본(tools/pixel_alesendo_portrait.py)을 오르가처럼 줄여 넣음
     b=io.BytesIO(); im.save(b,"WEBP",lossless=True,quality=100,method=6); return "data:image/webp;base64,"+base64.b64encode(b.getvalue()).decode()
 assets={"bg_attic":wb(D+"attic_bg.png")}
 for k in src: assets["bg_"+k]=wb(TMP+f"{k}_bg.png")
